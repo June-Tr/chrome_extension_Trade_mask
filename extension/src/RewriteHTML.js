@@ -1,18 +1,14 @@
-import * as CONFIG from "config/CONFIG.js" ;
+//import * as CONFIG from "config/CONFIG.js" ;
 
 // cache for the handle so we dont need to find it every single time we need it
-let cache = {
+var cache = {
     header:{
         main: null,
         balance: null,
         longButton: null,
         shortButton: null,
     },
-    workspace:{
-        main: null,
-        history: null,
-        position: null
-    },
+    workspace:{ },
     loaded: false
 }
 /**
@@ -35,12 +31,14 @@ let TimeOutWrapper = async (sleepCondition, cb, time=100) => {
 /**
  * Wrapper <- to improve readability. Default object will be whole document.
  * @param {class name/ id} name 
- * @param {in the array of class} index 
+ * @param {-1: get the whole array | >0 : index of the desired item} index 
  * @param {if this is a class} isClass 
  * @returns 
  */
 let Get = (name, index=0, isClass=true, from=document) => {
-    return from.querySelectorAll(`${(isClass)?'.':'#'}${name}`)[index]; 
+    return (index > -1) 
+        ? from.querySelectorAll(`${(isClass)?'.':'#'}${name}`)[index]
+        : from.querySelectorAll(`${(isClass)?'.':'#'}${name}`); 
 }
 
 /**
@@ -68,14 +66,31 @@ let ModifyHeader = async() => {
             Get(CONFIG.Html.ACCOUNT_SUMARY).innerHTML = CONFIG.Replacement.ACCOUNT_SUMARY;
             cache.header.balance.innerHTML = CONFIG.Replacement.BALANCE;
 
+            console.log(CONFIG.Addition.Header.RiskFactor);
             cache.header.main.innerHTML 
                 += CONFIG.Addition.Header.RiskFactorTitle
                     + CONFIG.Addition.Header.RiskFactor
                     + CONFIG.Addition.Header.LongPosLog
                     + CONFIG.Addition.Header.ShortPosLog
-            
+            console.log("here")
+            PrepareCache();
+        },
+        20
+    )
+}
+
+let PrepareCache = () =>{
+    TimeOutWrapper(
+        () => {
+            return (!IsLoad("bull") 
+                || !IsLoad("bear")
+            )
+        },
+        () => {
             cache.header.longButton = Get("bull", cache.header.main);
             cache.header.shortButton = Get("bear", cache.header.main);
+            cache.loaded = true;
         }
     )
 }
+

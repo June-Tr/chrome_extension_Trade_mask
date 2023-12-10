@@ -3,7 +3,13 @@ const CONFIG =  {
     Html :{
         ACCOUNT_SUMARY: "balance-dropdown",
         HEADER: "left",
-        BALANCE: "balance-bar__container"
+        BALANCE: "balance-bar__container",
+        WSPACE_H:"workspace__item",
+        WORKSPACES: [
+            "EUR_USD",
+            "History",
+            "position"
+        ],
     },
     Replacement: {
         ACCOUNT_SUMARY: "",
@@ -11,14 +17,13 @@ const CONFIG =  {
     },
     Addition: {
         Header:{
-            
-            RiskFactorTitle: `<div> <div  class="rf_title" ">Risk per trade: </div> </div>`,
+            RiskFactorTitle: `<div  class="rf_title" ">Risk per trade: </div>`,
             RiskFactor: "",
-            LongPosLog:`<div> <button id="bull" class="but1"> Long </button> </div>`,
-            ShortPosLog:`<div> <button id="bear" class="but2"> Long </button> </div>`
+            LongPosLog:`<button id="bull" class="myButton but1"> Long </button>`,
+            ShortPosLog:`<button id="bear" class="myButton but2"> Short </button>`
             
         }
     }
 }
-CONFIG.Addition.RiskFactor = `<div style="font-size:21px!important;margin-left:10px;margin-right:10px;">\$${CONFIG.RiskFactor} </div>`;
-//export default CONFIG;
+
+CONFIG.Addition.Header.RiskFactor = `<div class='RFactor'> \$${CONFIG.RiskFactor} </div>`;

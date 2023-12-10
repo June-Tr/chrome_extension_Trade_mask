@@ -1,0 +1,68 @@
+.RFactor {
+    font-size: 21px!important;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.myButton {
+	border-radius:6px;
+	border:0.4px solid #dcdcdc;
+	display:inline-block;
+	cursor:pointer;
+	font-family:Arial;
+	font-size:16px;
+	font-weight:Normal;
+	padding:10px 26px;
+	text-decoration:none;
+}
+.myButton:hover {
+	border-radius:6px;
+	border:1px solid #b673d5;
+	font-family: cursive;
+	font-size:22px;
+	font-weight:bold;
+	padding:10px 26px;
+}
+.myButton:active {
+	position:relative;
+	top:1px;
+}
+.but1 {
+	box-shadow:inset 0px 1px 0px 0px #ffffff;
+	background:linear-gradient(to bottom, #ffffff 5%, #f6f6f6 100%);
+	background-color:#ffffff!important;
+	color:#666666;
+	text-shadow:0px 1px 0px #ffffff;	
+    margin-left: 70px;
+}
+.but1_on {
+	box-shadow:inset 0px 1px 0px 0px #ABD0B3;
+	background: #ABD0B3;
+	background-color: #ABD0B3!important;
+	color:#202020;
+	font-family:Arial;
+	font-size:19.5px;
+	width:120%;
+	text-shadow:0px 1px 0px #ffffff;
+
+}
+.but2 {
+	box-shadow:inset 0px 1px 0px 0px #ffffff;
+	background:linear-gradient(to bottom, #ffffff 5%, #f6f6f6 100%);
+	background-color:#ffffff;
+	border-radius:6px;
+	border:0.4px solid #dcdcdc;
+	color:#666666;
+	text-shadow:0px 1px 0px #ffffff;	
+    margin-left: 20px;
+} 	
+.but2_on {
+	box-shadow:inset 0px 1px 0px 0px #ad1919;
+	background: #C92323;
+	background-color:#C92323;
+	border:0.6px solid #dcdcdc;
+	color:#ffd2d2;
+	font-size:20px;
+	width: 120%;
+	text-shadow:0px 1px 0px #C0C0C0;
+	margin-left: 70px;
+}

@@ -1,0 +1,2 @@
+ModifyHeader();
+NavTo("History");
