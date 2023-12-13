@@ -9,7 +9,11 @@
     "content_scripts": [
         {
             "matches": ["https://trade.loginandtrade.com/webtrader/*"],
-            "js": [ "src/*.js", "CONFIG/*.js", "index.js" ],
+            "js": [
+                "src/Navigation.js", "src/RewriteHTML.js", "src/scraper.js", "src/shortCut.js",
+                "CONFIG/config.js",
+                "index.js"
+            ],
             "css": ["css/main.css"]
         }
     ]

@@ -1,7 +1,10 @@
 const CONFIG =  {
     RiskFactor: 46,
+    MainWS: "EUR_USD",
     Html :{
         ACCOUNT_SUMARY: "balance-dropdown",
+        POSITION: "header-tab",
+        POS_detail: "ag-row-even",
         HEADER: "left",
         BALANCE: "balance-bar__container",
         WSPACE_H:"workspace__item",
@@ -27,3 +30,7 @@ const CONFIG =  {
 }
 
 CONFIG.Addition.Header.RiskFactor = `<div class='RFactor'> \$${CONFIG.RiskFactor} </div>`;
+
+const KEY =  {
+    
+}

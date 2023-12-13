@@ -1,2 +1,3 @@
 ModifyHeader();
-NavTo("History");
+IsInOpenPosition();
+console.log("Done")

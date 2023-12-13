@@ -66,13 +66,13 @@ let ModifyHeader = async() => {
             Get(CONFIG.Html.ACCOUNT_SUMARY).innerHTML = CONFIG.Replacement.ACCOUNT_SUMARY;
             cache.header.balance.innerHTML = CONFIG.Replacement.BALANCE;
 
-            console.log(CONFIG.Addition.Header.RiskFactor);
+            
             cache.header.main.innerHTML 
                 += CONFIG.Addition.Header.RiskFactorTitle
                     + CONFIG.Addition.Header.RiskFactor
                     + CONFIG.Addition.Header.LongPosLog
                     + CONFIG.Addition.Header.ShortPosLog
-            console.log("here")
+            
             PrepareCache();
         },
         20
@@ -80,15 +80,17 @@ let ModifyHeader = async() => {
 }
 
 let PrepareCache = () =>{
+
     TimeOutWrapper(
         () => {
-            return (!IsLoad("bull") 
-                || !IsLoad("bear")
+            
+            return (!IsLoad("bull",0, false) 
+                || !IsLoad("bear",0, false)
             )
         },
         () => {
-            cache.header.longButton = Get("bull", cache.header.main);
-            cache.header.shortButton = Get("bear", cache.header.main);
+            cache.header.longButton = Get("bull", 0, false, cache.header.main) ;
+            cache.header.shortButton = Get("bull", 0, false, cache.header.main) ;
             cache.loaded = true;
         }
     )
