@@ -53,6 +53,8 @@ var cache = {
             cache.Position.direction = "";
             cache.Position.price = "";
             cache.Position.entry = "";
+
+            cache.Position.Change();
         }
         
         
@@ -63,4 +65,13 @@ cache.Load.PageLoad = () => {
 }
 cache.Position.Change = async () => {
     cache.Position._callbackOnChange.forEach((cb) => cb());
+}
+
+cache.Position.test = () => {
+    console.log("test running")
+    cache.Position.state = true;
+    cache.Position.direction = "Sell";
+    cache.Position.price = 1.09199;
+    cache.Position.entry = "907119370";
+    cache.Position.Change();
 }

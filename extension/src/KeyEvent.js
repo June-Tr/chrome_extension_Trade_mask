@@ -16,6 +16,14 @@ cache.Load._callbackOnPageLoad.push(
                     "click",
                     () => {
                         console.log("Event trigger: click some where")
+                        IsInOpenPosition(() => {},
+                            () => {
+                                // if no position, mean that we have close it all. then we can reset
+                                // all page artifact to be consistence with no open position (if there a inconsitency)
+                                if(cache.Position.state)
+                                    cache.Position.reset();
+                            }
+                        )
                     }
                 )
             }
@@ -32,3 +40,5 @@ cache.Load._callbackOnPageLoad.push(
     }
     
 )
+
+cache.Load._callbackOnPageLoad.push(cache.Position.test);

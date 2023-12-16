@@ -104,7 +104,6 @@ class Button {
                     console.log( cache.Position.direction)
                     console.log(objectFound);
                     cache.Position.reset();
-                    cache.Position.Change();
                     /**
                      * @todo: send these information toward proxy server to load into Notion database.
                      */
