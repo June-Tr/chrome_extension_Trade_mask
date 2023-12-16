@@ -64,10 +64,16 @@ class Button {
         }
     }
     EntryHandle = () => {
-        ExtractImportancePositionDetail();
+        IsInOpenPosition(
+            ExtractImportancePositionDetail,
+            () => {
+                alert("Button click!! << No position found!");
+            }
+            
+        );
     }
     ExistHandle = () => {
-        
+        console.log("Exist click")
         ExtractPrice(
             (found, _) => {
                 // find the index of the current entry
@@ -116,14 +122,3 @@ class Button {
     }
 }
 
-
-let buttons = null;
-
-cache.Load._callbackOnPageLoad.push(
-    () => {
-        console.log("create button")
-        
-        buttons = new Button();
-        cache.Position._callbackOnChange.push(() => buttons.react());
-    }
-)

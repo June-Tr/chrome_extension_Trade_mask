@@ -1,3 +1,10 @@
+// button artifact will be added after fully rerender the page
+cache.Load._callbackOnPageLoad.push(
+    () => {       
+        cache.buttons = new Button();
+        cache.Position._callbackOnChange.push(() => cache.buttons.react());
+    }
+)
 
 // once the page is load, add the listen event for the close position click
 cache.Load._callbackOnPageLoad.push(
@@ -41,4 +48,4 @@ cache.Load._callbackOnPageLoad.push(
     
 )
 
-cache.Load._callbackOnPageLoad.push(cache.Position.test);
+//cache.Load._callbackOnPageLoad.push(cache.Position.test);

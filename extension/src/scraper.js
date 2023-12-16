@@ -31,6 +31,7 @@ let IsInOpenPosition = async (OnPositionCb, NoPositionCb = () => {}) => {
                 }, 50);
             }else{
                 if(n_trade > 0){
+                    console.log(n_trade);
                     OnPositionCb();
                 }else {
                     NoPositionCb();
@@ -79,9 +80,7 @@ let ExtractImportancePositionDetail = () => {
             )
                 
 
-        }
-
-    , info, false);       
+        } );       
 }
 
 
