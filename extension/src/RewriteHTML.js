@@ -5,6 +5,7 @@
 let controlLoopCount = 0;
 let PotentialIssueAlert = (callerName) => {
     if(controlLoopCount > 200){
+        
         alert("There are a potential of infinite loop @:" + callerName);
         controlLoopCount = 0;
     }

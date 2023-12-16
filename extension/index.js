@@ -1,2 +1,1 @@
 ModifyHeader();
-IsInOpenPosition();

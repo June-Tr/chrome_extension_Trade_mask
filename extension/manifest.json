@@ -13,7 +13,7 @@
                 "CONFIG/config.js",
                 "src/Navigation.js", "src/RewriteHTML.js",
                          "src/scraper.js", "src/shortCut.js",
-                         "src/Button.js",
+                         "src/Button.js", "src/KeyEvent.js",
                 
                 "index.js"
             ],

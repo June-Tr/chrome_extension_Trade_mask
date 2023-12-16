@@ -5,7 +5,7 @@
 // check for position:
 // - swap the button text with the entry price.
 
-let IsInOpenPosition = async () => {
+let IsInOpenPosition = async (OnPositionCb, NoPositionCb = () => {}) => {
     // check for postion
     TimeOutWrapper(
         () => {
@@ -13,6 +13,7 @@ let IsInOpenPosition = async () => {
             PotentialIssueAlert("IsInOpenPosition")
             return !IsLoad(CONFIG.Html.POSITION, 2)
         },
+        
         () => {
             // if there are no position, the header of the page will be "Position (0)"
             // else "Position (n)" where n is the number of trade :: n_trade >= 0
@@ -30,7 +31,9 @@ let IsInOpenPosition = async () => {
                 }, 50);
             }else{
                 if(n_trade > 0){
-                    ExtractImportancePositionDetail();
+                    OnPositionCb();
+                }else {
+                    NoPositionCb();
                 }
             }
 
@@ -48,32 +51,39 @@ let ExtractImportancePositionDetail = () => {
         () => {
             let row = Get(CONFIG.Html.POS_detail, 1);
             
-            let info = {
+            var info = {
                 id: row.innerText.split('\n')[2],
                 dir: row.innerText.match(/(Buy)*(Sell)*/g)[0]
             }     
-            ExtractPrice((found, info) => {
-                for(order of found){
+            NavTo("History", () =>
+                ExtractPrice((found, info) => {
+                    // complete gather information
                     
-                    if(order.id == info.id){
-                        cache.Position.state = true;
-                        console.log(info.dir);
-                        cache.Position.direction = info.dir;
-                        cache.Position.entry = info.id;
-                        cache.Position.price = order.price;
-                        cache.Position.Change();
-                        console.log("cache---");
-                        console.log(cache.Position)
-                        break;
+                    for(order of found){
+                        if(order.id == info.id){
+                            cache.Position.state = true;
+                            console.log(info.dir);
+                            cache.Position.direction = info.dir;
+                            cache.Position.entry = info.id;
+                            cache.Position.price = order.price;
+                            console.log("cache---");
+                            console.log(cache.Position)
+                            break;
+                        }
                     }
-                }
-                // complete gather information
-                NavTo(CONFIG.MainWS);
+                    // this call back will be executed if and only if we able to navigate to History ws in the first place.
+                    // then we must then we must return to the main work space (default) before do anything else
+                    // in this case: notify that the position state is changing
+                    NavTo(CONFIG.MainWS, cache.Position.Change);
+                })
+            )
+                
 
-            }, info, false);       
         }
-    )
+
+    , info, false);       
 }
+
 
 /**
  * A promise that will call cb on 10 or less order from history
@@ -81,8 +91,8 @@ let ExtractImportancePositionDetail = () => {
  * @param {extra arguement for the cb} arg 
  * @param {intented to be call internally} _Secondcast 
  */
-let ExtractPrice = (cb, arg, _Secondcast=true) => {
-    if(!_Secondcast) NavTo("History");
+let ExtractPrice = (cb, arg) => {
+    
     TimeOutWrapper(
         () => {
             PotentialIssueAlert("ExtractPrice");
