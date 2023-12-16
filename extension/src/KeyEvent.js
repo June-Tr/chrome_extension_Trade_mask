@@ -21,6 +21,9 @@ cache.Load._callbackOnPageLoad.push(
                 positionPage.addEventListener(
                     "click",
                     () => {
+                        /**
+                         * @todo: add the real
+                         */
                         console.log("Event trigger: click some where")
                         IsInOpenPosition(() => {},
                             () => {

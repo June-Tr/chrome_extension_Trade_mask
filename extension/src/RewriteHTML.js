@@ -74,7 +74,7 @@ let ModifyHeader = async() => {
                 += CONFIG.Addition.Header.RiskFactorTitle
                     + CONFIG.Addition.Header.RiskFactor
                     + CONFIG.Addition.Header.LongPosLog
-                    + CONFIG.Addition.Header.ShortPosLog
+                    + CONFIG.Addition.Header.ShortPosLog;
             
             PrepareCache();
         },

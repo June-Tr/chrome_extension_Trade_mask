@@ -1,3 +1,17 @@
+.guide {
+	font-size: "30px";
+}
+#shortcut {
+	padding-left: 10px;
+    border-radius: 10px;
+    position: relative;
+    user-select: none;
+    font-size: 2em;
+    width: 100px;
+    color: #EEEEEE;
+    background-color: #FD7013;
+	z-index: 22	;
+}
 .RFactor {
     font-size: 21px!important;
     margin-left: 10px;

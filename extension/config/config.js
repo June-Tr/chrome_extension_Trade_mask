@@ -12,7 +12,8 @@ const CONFIG =  {
         BUY: 2,
         SELL: 6,
         IMPULSE: 26,
-        CORRECTIVE: 38
+        CORRECTIVE: 38,
+        TRIANGLE: 14
     },
     Html :{
         ACCOUNT_SUMARY: "balance-dropdown",
@@ -79,9 +80,7 @@ cache.Load.PageLoad = () => {
     cache.Load._callbackOnPageLoad.forEach((cb) => cb());
 }
 cache.Main.Reload = () => {
-    console.log("Main reload")
     cache.Main._cbOnMainReload.forEach((cb) => {
-        console.log(cb);
         cb();
     });
 }
@@ -89,7 +88,6 @@ cache.Position.Change = async () => {
     cache.Position._callbackOnChange.forEach((cb) => cb());
 }
 cache.Position.test = () => {
-    console.log("test running")
     cache.Position.state = true;
     cache.Position.direction = "Sell";
     cache.Position.price = 1.09199;

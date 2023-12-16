@@ -1,6 +1,7 @@
 // Add keydown listener to listen for key press
 
 let clickCount = 0;
+let showGuide = false;
 
 let NavShortCut = () => {
     document.addEventListener("keydown", 
@@ -11,6 +12,12 @@ let NavShortCut = () => {
             }
             if(event.altKey && event.key ==="M" ){
                 NavTo(CONFIG.MainWS);
+            }
+            if(event.altKey && event.key ==="q" ){
+                cache.buttons.clickHandle();
+            }
+            if(event.altKey && event.key ==="a" ){
+                cache.buttons.clickHandle();
             }
         }
     , true)
@@ -34,38 +41,71 @@ let canvasListener = () => {
                     return canvasListener();
                 }, 1000);
             }
-            else 
+            
+            else {
+                createPopup(doc)
+
                 doc.addEventListener("keydown", 
                     (event) => {
-                        if(event.altKey && event.key === "\`" ){
-                            clickCount ++;
-                            Open(doc, CONFIG.MENU_INDEX.ORDER, CONFIG.FEATURE.BUY);
-                        }
-                        if(event.altKey && event.key ==="1" ){
-                            clickCount ++;
-                            Open(doc, CONFIG.MENU_INDEX.ORDER, CONFIG.FEATURE.SELL);
-                        }
-                        if(event.altKey && event.key ==="2" ){
-                            clickCount ++;
-                            Open(doc, CONFIG.MENU_INDEX.ELLIOT, CONFIG.FEATURE.IMPULSE);
-                        }
-                        if(event.altKey && event.key ==="3" ){
-                            clickCount ++;
-                            Open(doc, CONFIG.MENU_INDEX.ELLIOT, CONFIG.FEATURE.CORRECTIVE);
-                        }
-                        if(event.altKey && event.key ==="H" ){
-                            NavTo("History");
-                        }
-                        if(event.keyCode == 9){
+                        if(event.ctrlKey && event.keyCode == "16"){ // shift
+                            showGuide = !showGuide;
+                        }if(event.keyCode == 9){ // tab
                             findLockFeature(doc, "lock")
+                        }if(showGuide && event.altKey){
+                            Get("shortcut",0, false, doc).style.display = "flex"
                         }
-                        if(event.altKey && event.key ==="x" ){
-                            findLockFeature(doc, "lock")
+
+                        if(event.altKey){
+                            switch(event.key){
+                                case "q":
+                                    cache.buttons.clickHandle();
+                                    break;
+                                case "a":
+                                    cache.buttons.clickHandle();
+                                    break;
+                                case  "\`":
+                                    clickCount ++;
+                                    Open(doc, CONFIG.MENU_INDEX.ORDER, CONFIG.FEATURE.BUY);
+                                    break;
+                                case "1":
+                                    clickCount ++;
+                                    Open(doc, CONFIG.MENU_INDEX.ORDER, CONFIG.FEATURE.SELL);
+                                    break;
+                                case "2":
+                                    clickCount ++;
+                                    Open(doc, CONFIG.MENU_INDEX.ELLIOT, CONFIG.FEATURE.IMPULSE);
+                                    break;
+                                case "3":
+                                    clickCount ++;
+                                    Open(doc, CONFIG.MENU_INDEX.ELLIOT, CONFIG.FEATURE.CORRECTIVE);
+                                    break;
+                                case "4":
+                                    clickCount ++;
+                                    Open(doc, CONFIG.MENU_INDEX.ELLIOT, CONFIG.FEATURE.TRIANGLE);
+                                    break;
+                                case "h":
+                                    NavTo("History");
+                                    break;
+                                case "d":
+                                    findLockFeature(doc, "remove")
+                                    break;
+                                default: break;
+                            }
                         }
-                        
                     }
                 , true)
                 }
+
+                doc.addEventListener("keyup", 
+                    (event) => {
+                        if(showGuide && event.keyCode == 18){
+                            event.preventDefault();
+                            Get("shortcut",0, false, doc).style.display = "none";
+                        }
+                    },
+                    true
+                )
+            }
     )
 }
 
@@ -122,6 +162,7 @@ let OpenFeature = (doc, feature) => {
             }
             let menuObject = Get(CONFIG.CONTAINER, 0, true, doc);
             // not load the item we want
+            //console.log(menuObject.getElementsByTagName("div"))
             if(menuObject.getElementsByTagName("div").length < 3){
                 let id = setTimeout(() => { 
                     clearTimeout(id);

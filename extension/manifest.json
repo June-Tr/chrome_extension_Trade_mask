@@ -21,7 +21,8 @@
                          "src/scraper.js",
                          "src/Button.js", "src/KeyEvent.js",
 
-                
+
+                "html/popup.js",
                 
                 "index.js"
             ],
