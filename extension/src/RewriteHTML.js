@@ -1,15 +1,13 @@
 //import * as CONFIG from "config/CONFIG.js" ;
 
 // cache for the handle so we dont need to find it every single time we need it
-var cache = {
-    header:{
-        main: null,
-        balance: null,
-        longButton: null,
-        shortButton: null,
-    },
-    workspace:{ },
-    loaded: false
+
+let controlLoopCount = 0;
+let PotentialIssueAlert = (callerName) => {
+    if(controlLoopCount > 200){
+        alert("There are a potential of infinite loop @:" + callerName);
+        controlLoopCount = 0;
+    }
 }
 /**
  * 
@@ -18,12 +16,16 @@ var cache = {
  * @param {Int} time that this task will be sleep for 
  */
 let TimeOutWrapper = async (sleepCondition, cb, time=100) => {
+
+    
     if(sleepCondition()){
         let id = setTimeout(() => { 
             clearTimeout(id);
+            controlLoopCount++;
             return TimeOutWrapper(sleepCondition, cb, time);
         }, time);
     }else{
+        controlLoopCount = 0;
         cb();
     }
 }
@@ -56,7 +58,7 @@ let IsLoad = (name, InterestedObjIndex=0, isClass=true, from=document) => {
 let ModifyHeader = async() => {
     TimeOutWrapper(
         () => { 
-            
+            PotentialIssueAlert("ModifyHeader");
             return !IsLoad(CONFIG.Html.ACCOUNT_SUMARY) || !IsLoad(CONFIG.Html.HEADER);
         },
         () => {
@@ -83,15 +85,13 @@ let PrepareCache = () =>{
 
     TimeOutWrapper(
         () => {
-            
+            PotentialIssueAlert("PrepareCache")
             return (!IsLoad("bull",0, false) 
                 || !IsLoad("bear",0, false)
             )
         },
         () => {
-            cache.header.longButton = Get("bull", 0, false, cache.header.main) ;
-            cache.header.shortButton = Get("bull", 0, false, cache.header.main) ;
-            cache.loaded = true;
+            cache.Load.PageLoad();
         }
     )
 }

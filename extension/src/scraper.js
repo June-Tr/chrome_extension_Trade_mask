@@ -2,12 +2,6 @@
  * @todo: pottentially add a method to pre-process to keep track of the index of all tab on the 
  * main work space
  */
-// add the state to cache
-// -1: Short
-// +1 : Long
-//  0 : no position
-cache.state = 0;
-
 // check for position:
 // - swap the button text with the entry price.
 
@@ -16,7 +10,7 @@ let IsInOpenPosition = async () => {
     TimeOutWrapper(
         () => {
             // check if the header tab loaded and reader to be scrap
-            
+            PotentialIssueAlert("IsInOpenPosition")
             return !IsLoad(CONFIG.Html.POSITION, 2)
         },
         () => {
@@ -48,6 +42,7 @@ let IsInOpenPosition = async () => {
 let ExtractImportancePositionDetail = () => {
     TimeOutWrapper(
         () => {
+            PotentialIssueAlert("ExtractImportancePositionDetail")
             return !IsLoad(CONFIG.Html.POS_detail)
         },
         () => {
@@ -61,8 +56,14 @@ let ExtractImportancePositionDetail = () => {
                 for(order of found){
                     
                     if(order.id == info.id){
-                        console.log(order);
-
+                        cache.Position.state = true;
+                        console.log(info.dir);
+                        cache.Position.direction = info.dir;
+                        cache.Position.entry = info.id;
+                        cache.Position.price = order.price;
+                        cache.Position.Change();
+                        console.log("cache---");
+                        console.log(cache.Position)
                         break;
                     }
                 }
@@ -84,6 +85,7 @@ let ExtractPrice = (cb, arg, _Secondcast=true) => {
     if(!_Secondcast) NavTo("History");
     TimeOutWrapper(
         () => {
+            PotentialIssueAlert("ExtractPrice");
             // check if the page is loaded
             return !IsLoad("ag-center-cols-container")
         },
@@ -91,7 +93,7 @@ let ExtractPrice = (cb, arg, _Secondcast=true) => {
             let container = (Get("ag-center-cols-container"));
             
             // not fully loaded
-            if(container.children.length < 1){
+            if(container.children.length < 1 || container.children[0].innerText.split("\n").length <5){
                 let timeOutID= setTimeout(() => { 
                     clearTimeout(timeOutID);
                     ExtractPrice(cb, arg);;
@@ -102,13 +104,16 @@ let ExtractPrice = (cb, arg, _Secondcast=true) => {
                 let order = {}
                 // extra the position
                 let length = (container.children.length < 10)? container.children.length: 10;
+                
                 for(let i =0; i < length; i++){
                     
                     order = container.children[i].innerText.split("\n");
+                    
                     found.push(
                         {
                             date: order[0],
                             price: order[3],
+                            direction: order[1],
                             id: order[4]
                         }
                     )       

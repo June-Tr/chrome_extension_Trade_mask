@@ -22,15 +22,45 @@ const CONFIG =  {
         Header:{
             RiskFactorTitle: `<div  class="rf_title" ">Risk per trade: </div>`,
             RiskFactor: "",
-            LongPosLog:`<button id="bull" class="myButton but1"> Long </button>`,
-            ShortPosLog:`<button id="bear" class="myButton but2"> Short </button>`
+            LongPosLog:`<button id="bull" class="myButton but1"> Buy </button>`,
+            ShortPosLog:`<button id="bear" class="myButton but2"> Sell </button>`
             
         }
     }
 }
-
 CONFIG.Addition.Header.RiskFactor = `<div class='RFactor'> \$${CONFIG.RiskFactor} </div>`;
 
-const KEY =  {
-    
+var cache = {
+    header:{
+        main: null,
+        balance: null,
+    },
+    workspace:{ },
+    Load: {
+        _callbackOnPageLoad:[],
+
+        
+    },
+    Position: {
+        state: false,
+        direction: "",
+        price: "",
+        entry: "",
+        // use the listener pattern
+        _callbackOnChange:[],
+        reset: () => {
+            cache.Position.state = false;
+            cache.Position.direction = "";
+            cache.Position.price = "";
+            cache.Position.entry = "";
+        }
+        
+        
+    }
+}
+cache.Load.PageLoad = () => {
+    cache.Load._callbackOnPageLoad.forEach((cb) => cb());
+}
+cache.Position.Change = async () => {
+    cache.Position._callbackOnChange.forEach((cb) => cb());
 }

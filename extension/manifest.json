@@ -10,8 +10,11 @@
         {
             "matches": ["https://trade.loginandtrade.com/webtrader/*"],
             "js": [
-                "src/Navigation.js", "src/RewriteHTML.js", "src/scraper.js", "src/shortCut.js",
                 "CONFIG/config.js",
+                "src/Navigation.js", "src/RewriteHTML.js",
+                         "src/scraper.js", "src/shortCut.js",
+                         "src/Button.js",
+                
                 "index.js"
             ],
             "css": ["css/main.css"]
