@@ -18,7 +18,6 @@ cache.Load._callbackOnPageLoad.push(
             },
             () => {
                 let positionPage = Get("ag-root-wrapper-body")
-                console.log(positionPage)
                 positionPage.addEventListener(
                     "click",
                     () => {
@@ -37,6 +36,9 @@ cache.Load._callbackOnPageLoad.push(
         )
     }
 )
+cache.Load._callbackOnPageLoad.push(
+    NavShortCut
+);
 
 // once the page is load, check for open position
 cache.Load._callbackOnPageLoad.push(
@@ -44,8 +46,14 @@ cache.Load._callbackOnPageLoad.push(
         IsInOpenPosition(
             // we want to extract and caching the information
             ExtractImportancePositionDetail);
+    },
+    () => {
+        // since we stay on the main page we need to tell the system, that the main page is load.
+        NavTo(CONFIG.MainWS);
     }
-    
 )
 
+cache.Main._cbOnMainReload.push(
+    canvasListener
+)
 //cache.Load._callbackOnPageLoad.push(cache.Position.test);

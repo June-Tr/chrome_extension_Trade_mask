@@ -1,6 +1,19 @@
 const CONFIG =  {
     RiskFactor: 46,
     MainWS: "EUR_USD",
+    MENU: "group-2JyOhh7Z",
+    MENU_INDEX : {
+        ORDER: 20,
+        ELLIOT: 17
+    },
+    CONTAINER: "menuWrap-1gEtmoET",
+
+    FEATURE: {
+        BUY: 2,
+        SELL: 6,
+        IMPULSE: 26,
+        CORRECTIVE: 38
+    },
     Html :{
         ACCOUNT_SUMARY: "balance-dropdown",
         POSITION: "header-tab",
@@ -30,16 +43,18 @@ const CONFIG =  {
 }
 CONFIG.Addition.Header.RiskFactor = `<div class='RFactor'> \$${CONFIG.RiskFactor} </div>`;
 
+
 var cache = {
     header:{
         main: null,
         balance: null,
     },
+    Main: {
+        _cbOnMainReload: []
+    },
     workspace:{ },
     Load: {
         _callbackOnPageLoad:[],
-
-        
     },
     Position: {
         state: false,
@@ -63,10 +78,16 @@ var cache = {
 cache.Load.PageLoad = () => {
     cache.Load._callbackOnPageLoad.forEach((cb) => cb());
 }
+cache.Main.Reload = () => {
+    console.log("Main reload")
+    cache.Main._cbOnMainReload.forEach((cb) => {
+        console.log(cb);
+        cb();
+    });
+}
 cache.Position.Change = async () => {
     cache.Position._callbackOnChange.forEach((cb) => cb());
 }
-
 cache.Position.test = () => {
     console.log("test running")
     cache.Position.state = true;

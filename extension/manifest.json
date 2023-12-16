@@ -6,17 +6,22 @@
         "tabs",
         "scripting"
     ],
+    "action": {
+        "default_popup": "guide.html"
+    },
     "content_scripts": [
         {
             "matches": ["https://trade.loginandtrade.com/webtrader/*"],
             "js": [
+                "Shortcut/Shortcut.js",
+                
                 "CONFIG/config.js",
                 
                 "src/Navigation.js", "src/RewriteHTML.js",
                          "src/scraper.js",
                          "src/Button.js", "src/KeyEvent.js",
 
-                "Shortcut/Shortcut.js",
+                
                 
                 "index.js"
             ],
