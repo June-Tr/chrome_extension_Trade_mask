@@ -1,3 +1,10 @@
+/**
+ * There are 3 event:
+ * (1) : The inititial prep phase + rewritten phase complete <- PageLOAD
+ * (2) : The Position status is updated (enter a position, exist one) <-Position.Change
+ * (3) : The main work page is reloaded (all the artifact need to be up to date) <- Reload
+ */
+
 // button artifact will be added after fully rerender the page
 cache.Load._callbackOnPageLoad.push(
     () => {       
@@ -39,6 +46,7 @@ cache.Load._callbackOnPageLoad.push(
         )
     }
 )
+
 cache.Load._callbackOnPageLoad.push(
     NavShortCut
 );

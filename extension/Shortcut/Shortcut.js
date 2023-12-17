@@ -6,7 +6,6 @@ let showGuide = false;
 let NavShortCut = () => {
     document.addEventListener("keydown", 
         (event) => {
-                    
             if(event.altKey && event.key ==="H" ){
                 NavTo("History");
             }
@@ -31,6 +30,7 @@ let canvasListener = () => {
             return document.getElementsByTagName("tpdwt-tvp-chart").length === 0
         },
         () => {
+            // This is a sub document of the main HTML
             let ifrm = document.getElementsByTagName("tpdwt-tvp-chart")[0].children[0].children[0];
             let doc = ifrm.contentDocument? ifrm.contentDocument: ifrm.contentWindow.document;
 
@@ -48,6 +48,8 @@ let canvasListener = () => {
                 doc.addEventListener("keydown", 
                     (event) => {
                         if(event.ctrlKey && event.keyCode == "16"){ // shift
+                            
+                            popupStatic = !popupStatic;
                             showGuide = !showGuide;
                         }if(event.keyCode == 9){ // tab
                             findLockFeature(doc, "lock")
@@ -58,7 +60,8 @@ let canvasListener = () => {
                         if(event.altKey){
                             switch(event.key){
                                 case "q":
-                                    cache.buttons.clickHandle();
+                                    clickCount ++;
+                                    Open(doc, CONFIG.MENU_INDEX.TEXT, CONFIG.FEATURE.INSERT_TXT);
                                     break;
                                 case "a":
                                     cache.buttons.clickHandle();
@@ -99,6 +102,7 @@ let canvasListener = () => {
                 doc.addEventListener("keyup", 
                     (event) => {
                         if(showGuide && event.keyCode == 18){
+                            
                             event.preventDefault();
                             Get("shortcut",0, false, doc).style.display = "none";
                         }
@@ -137,7 +141,6 @@ let findLockFeature = (doc, name) =>{
         }
         
     }catch (e) {
-        
         console.log(e)
     }
 }

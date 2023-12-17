@@ -3,8 +3,8 @@
 // cache for the handle so we dont need to find it every single time we need it
 
 let controlLoopCount = 0;
-let PotentialIssueAlert = (callerName) => {
-    if(controlLoopCount > 200){
+let PotentialIssueAlert = (callerName, loopCount = 200) => {
+    if(controlLoopCount > loopCount){
         
         alert("There are a potential of infinite loop @:" + callerName);
         controlLoopCount = 0;
@@ -56,10 +56,15 @@ let IsLoad = (name, InterestedObjIndex=0, isClass=true, from=document) => {
 }
 
 
+/**
+ * (1): Remove the balance
+ * (2): Add the risk allowance
+ * (3): add 2 clickable button for trade log.
+ */
 let ModifyHeader = async() => {
     TimeOutWrapper(
         () => { 
-            PotentialIssueAlert("ModifyHeader");
+            PotentialIssueAlert("ModifyHeader",1000);
             return !IsLoad(CONFIG.Html.ACCOUNT_SUMARY) || !IsLoad(CONFIG.Html.HEADER);
         },
         () => {
@@ -82,6 +87,9 @@ let ModifyHeader = async() => {
     )
 }
 
+/**
+ * This method is to check the added feature is present, hence potentially the page load is complete
+ */
 let PrepareCache = () =>{
 
     TimeOutWrapper(

@@ -8,7 +8,7 @@
     user-select: none;
     font-size: 2em;
     width: 100px;
-    color: #EEEEEE;
+    color: rgba(245, 222, 16, 0.195);
     background-color: #FD7013;
 	z-index: 22	;
 }

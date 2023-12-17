@@ -1,15 +1,22 @@
 // show pop up when alt is hold
 let popup = null;
 let guideTxt = [
+    {symbol:`Shift`, guide:`Ruler`},
     {symbol:`\``, guide:`Long position`},
     {symbol:`1`, guide:`Short position`},
     {symbol:`2`, guide: `Elliot impulse`},
     {symbol:`3`, guide: `Elliot corrective`},
-    {symbol:`F`, guide: `Fib retracement`}
+    {symbol:`4`, guide: `Triangle`},
+    {symbol:`F`, guide: `Fib retracement`},
+    {symbol:`T`, guide: `Trend line`}
 ]
+let popupStatic = true;
+
 let showShortCut = (e, doc) => {
     let handler = Get("shortcut",0, false, doc);
-    
+
+    if(popupStatic) return;
+
     handler.style.top = e.clientY + "px";
     handler.style.left = (e.clientX + 25) + "px";
 }
@@ -21,24 +28,27 @@ let createPopup = (doc) => {
         popup = doc.createElement('div');
         popup.setAttribute("id", "shortcut");
         popup.setAttribute("class", "tv-floating-toolbar");
-        popup.style["background-color"] = "rgb(58, 8, 2)";
+        popup.style["background-color"] = " rgba(255, 255, 255, 0)";
         for(txt of guideTxt){
             handle = doc.createElement('div');
 
 
             let symbol = doc.createElement("div");
             symbol.appendChild(doc.createTextNode(txt.symbol))
-            symbol.style["font-size"] = "22px";
+            symbol.style["font-size"] = "20px";
             symbol.style["font-weight"] = "bold";
-            symbol.style["color"] = "rgb(60, 222, 255)";
+            symbol.style["color"] = "#0c0622";
             handle.appendChild(symbol);
 
             symbol = doc.createElement("div");
-            symbol.style.width = "25px";
+            symbol.style.width = "40px";
             handle.appendChild(symbol);
             
             symbol = doc.createElement("div");
             symbol.appendChild(doc.createTextNode(txt.guide))
+            symbol.style["font-size"] = "14px";
+            symbol.style.height = "28px";
+            symbol.style["color"] = "#0c0622";
             handle.appendChild(symbol);
 
             symbol = doc.createElement("div");
@@ -56,3 +66,7 @@ let createPopup = (doc) => {
     page.appendChild(popup);
     doc.addEventListener("mousemove", (e) => { showShortCut(e, doc)}, true);
 }
+
+/**
+ * @todo: use shift to display different infomation
+ */

@@ -1,14 +1,17 @@
+
 const CONFIG =  {
     RiskFactor: 46,
     MainWS: "EUR_USD",
     MENU: "group-2JyOhh7Z",
     MENU_INDEX : {
         ORDER: 20,
+        TEXT:14,
         ELLIOT: 17
     },
     CONTAINER: "menuWrap-1gEtmoET",
 
     FEATURE: {
+        INSERT_TXT:2,
         BUY: 2,
         SELL: 6,
         IMPULSE: 26,
@@ -44,7 +47,9 @@ const CONFIG =  {
 }
 CONFIG.Addition.Header.RiskFactor = `<div class='RFactor'> \$${CONFIG.RiskFactor} </div>`;
 
-
+/**
+ * Cache: store most use feature,  and itself store, call event
+ */
 var cache = {
     header:{
         main: null,
@@ -71,9 +76,7 @@ var cache = {
             cache.Position.entry = "";
 
             cache.Position.Change();
-        }
-        
-        
+        } 
     }
 }
 cache.Load.PageLoad = () => {
