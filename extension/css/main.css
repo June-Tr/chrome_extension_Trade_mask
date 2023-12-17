@@ -27,12 +27,13 @@
 	font-weight:Normal;
 	padding:10px 26px;
 	text-decoration:none;
+	text-align: center;
+	width: 90px;
 }
 .myButton:hover {
 	border-radius:6px;
-	border:1px solid #b673d5;
-	font-family: cursive;
-	font-size:22px;
+	border:0.4px solid  #dcdcdc;
+	font-size:16px;
 	font-weight:bold;
 	padding:10px 26px;
 }

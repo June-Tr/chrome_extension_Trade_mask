@@ -86,6 +86,10 @@ let canvasListener = () => {
                                     clickCount ++;
                                     Open(doc, CONFIG.MENU_INDEX.ELLIOT, CONFIG.FEATURE.TRIANGLE);
                                     break;
+                                case "5":
+                                    clickCount ++;
+                                    Open(doc, CONFIG.MENU_INDEX.SHAPE, CONFIG.FEATURE.RECTANGLE);
+                                    break;
                                 case "h":
                                     NavTo("History");
                                     break;

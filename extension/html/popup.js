@@ -8,7 +8,8 @@ let guideTxt = [
     {symbol:`3`, guide: `Elliot corrective`},
     {symbol:`4`, guide: `Triangle`},
     {symbol:`F`, guide: `Fib retracement`},
-    {symbol:`T`, guide: `Trend line`}
+    {symbol:`T`, guide: `Trend line`},
+    {symbol:`Q`, guide: `Text`}
 ]
 let popupStatic = true;
 

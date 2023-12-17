@@ -6,7 +6,8 @@ const CONFIG =  {
     MENU_INDEX : {
         ORDER: 20,
         TEXT:14,
-        ELLIOT: 17
+        ELLIOT: 17,
+        SHAPE: 11
     },
     CONTAINER: "menuWrap-1gEtmoET",
 
@@ -16,7 +17,8 @@ const CONFIG =  {
         SELL: 6,
         IMPULSE: 26,
         CORRECTIVE: 38,
-        TRIANGLE: 14
+        TRIANGLE: 14,
+        RECTANGLE: 6,
     },
     Html :{
         ACCOUNT_SUMARY: "balance-dropdown",
