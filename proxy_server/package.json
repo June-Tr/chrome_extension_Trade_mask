@@ -1,0 +1,22 @@
+{
+  "name": "proxy_server",
+  "version": "1.0.0",
+  "description": "A middle point between Notion and trade assistence extension",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Notion",
+    "API"
+  ],
+  "author": "June",
+  "license": "MIT",
+  "devDependencies": {
+    "@notionhq/client": "^2.2.14",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "xmlhttprequest": "^1.8.0"
+  }
+}

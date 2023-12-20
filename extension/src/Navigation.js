@@ -13,7 +13,8 @@ let NavTo = (name, cb = () => {}) => {
                     if(container[i].innerText == name){
                         cache.workspace[name] =container[i];
                         FoundWs = true;
-                        container[i].click();    
+                        container[i].click();  
+                        cb();  
                         break;
                     }
                 }
@@ -32,12 +33,13 @@ let NavTo = (name, cb = () => {}) => {
         )
     }else{
         cache.workspace[name].click();
+        cb();
         if(name == CONFIG.MainWS)
             cache.Main.Reload();
         
     }
 
-    // check if we nav back to main from somewhere else;
+    
     
 }
 

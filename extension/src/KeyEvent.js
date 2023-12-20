@@ -12,40 +12,40 @@ cache.Load._callbackOnPageLoad.push(
         cache.Position._callbackOnChange.push(() => cache.buttons.react());
     }
 )
-
+let initLoad =true;
 // once the page is load, add the listen event for the close position click
-cache.Load._callbackOnPageLoad.push(
-    // since we look 
-    () => {
-        TimeOutWrapper(
-            () => {
-                // check if the header tab loaded and reader to be scrap
-                PotentialIssueAlert("Add closing handler")
-                return !IsLoad("ag-root-wrapper-body")
-            },
-            () => {
-                let positionPage = Get("ag-root-wrapper-body")
-                positionPage.addEventListener(
-                    "click",
-                    () => {
-                        /**
-                         * @todo: add the real
-                         */
-                        console.log("Event trigger: click some where")
-                        IsInOpenPosition(() => {},
-                            () => {
-                                // if no position, mean that we have close it all. then we can reset
-                                // all page artifact to be consistence with no open position (if there a inconsitency)
-                                if(cache.Position.state)
-                                    cache.Position.reset();
-                            }
-                        )
-                    }
-                )
-            }
-        )
-    }
-)
+// cache.Main._cbOnMainReload.push(
+//     // since we look 
+//     () => {
+//         TimeOutWrapper(
+//             () => {
+//                 // check if the header tab loaded and reader to be scrap
+//                 PotentialIssueAlert("Add closing handler")
+//                 return !IsLoad("ag-pinned-right-cols-container")
+//             },
+//             () => {
+//                 let positionPage = Get("ag-pinned-right-cols-container");
+//                 console.log(positionPage)
+//                 let observer = new MutationObserver(() => {
+//                     if(initLoad){
+//                         return initLoad=false;
+//                     }
+//                     IsInOpenPosition(
+//                         () => {
+//                             console.log("entry");
+//                         },
+//                         () => {
+//                             console.log("exit")
+//                         }
+//                     )
+//                 })
+//                 observer.observe(positionPage,
+//                     { attributes: true, childList: true, subtree: true }
+//                     )
+//             }
+//         )
+//     }
+// )
 
 cache.Load._callbackOnPageLoad.push(
     NavShortCut
@@ -56,12 +56,12 @@ cache.Load._callbackOnPageLoad.push(
     () => {
         IsInOpenPosition(
             // we want to extract and caching the information
-            ExtractImportancePositionDetail);
-    },
-    () => {
-        // since we stay on the main page we need to tell the system, that the main page is load.
-        NavTo(CONFIG.MainWS);
-    }
+            ExtractImportancePositionDetail,
+            () => {
+                // since we stay on the main page we need to tell the system, that the main page is load.
+                NavTo(CONFIG.MainWS);
+            });
+    }    
 )
 
 cache.Main._cbOnMainReload.push(

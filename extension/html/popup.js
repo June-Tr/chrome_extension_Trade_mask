@@ -9,7 +9,9 @@ let guideTxt = [
     {symbol:`4`, guide: `Triangle`},
     {symbol:`F`, guide: `Fib retracement`},
     {symbol:`T`, guide: `Trend line`},
-    {symbol:`Q`, guide: `Text`}
+    {symbol:`Q`, guide: `Text`},
+    {symbol:`F1`, guide: `Open Alert Menu`},
+    {symbol:`z`, guide: `Open Order adjustment`},
 ]
 let popupStatic = true;
 

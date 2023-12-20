@@ -15,7 +15,7 @@
             "js": [
                 "Shortcut/Shortcut.js",
                 
-                "CONFIG/config.js",
+                "CONFIG/config.js","CONFIG/cache.js",
                 
                 "src/Navigation.js", "src/RewriteHTML.js",
                          "src/scraper.js",

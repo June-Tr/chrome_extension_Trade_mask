@@ -46,7 +46,6 @@ class Button {
                 this.longButton.classList.remove("but1_on");
                 this.longButton.innerText = "Buy";
                 this.shortButton.innerText = "Sell";
-                console.log("Button: unexpect response occur")
                 break;
                 
         }
@@ -67,57 +66,62 @@ class Button {
         IsInOpenPosition(
             ExtractImportancePositionDetail,
             () => {
-                alert("Button click!! << No position found!");
+                alert("Button click:: Entry!! << No position found!");
             }
             
         );
     }
     ExistHandle = () => {
-        console.log("Exist click")
-        ExtractPrice(
-            (found, _) => {
-                // find the index of the current entry
-                let i =0;
+        IsInOpenPosition(
+            () => { console.log("Button click:: Exit!! <<Still on an open position")},
+            () => // only try attempt finding the end of position if not on any position
+                NavTo( "History",
+                    () => ExtractPrice(
+                        (found, _) => {
+                            // find the index of the current entry
+                            let i =0;
 
-                /* Increment to find the location of current entry
-                */
-                let update = (i) => { return i + 1;}
-                let objectFound = false
-                while(i< found.length && i > -1){
-                    
-                    if(i > 100 || i < -100){
-                        alert("Infinite while loop @click handler");
-                        break;
-                    }
+                            /* Increment to find the location of current entry
+                            */
+                            let update = (i) => { return i + 1;}
+                            let objectFound = false
+                            while(i< found.length && i > -1){
+                                
+                                if(i > 100 || i < -100){
+                                    alert("Infinite while loop @click handler");
+                                    break;
+                                }
 
-                    if(!objectFound && found[i].id == cache.Position.entry){
-                        // start looking for
-                        update = (i) => {return i - 1}
-                        objectFound = true;
-                        console.log("=========================")
-                    }
-                    
-                    if(objectFound && found[i]?.direction != cache.Position.direction){
-                        objectFound = {...found[i]};
-                        break;
-                    }
-                    i = update(i);
-                }
+                                if(!objectFound && found[i].id == cache.Position.entry){
+                                    // start looking for
+                                    update = (i) => {return i - 1}
+                                    objectFound = true;
+                                    console.log("=========================")
+                                }
+                                
+                                if(objectFound && found[i]?.direction != cache.Position.direction){
+                                    objectFound = {...found[i]};
+                                    break;
+                                }
+                                i = update(i);
+                            }
 
-                if(objectFound === false || objectFound === true){
-                    console.log("Trade not found")
-                }else{
-                    console.log( cache.Position.direction)
-                    console.log(objectFound);
-                    cache.Position.reset();
-                    /**
-                     * @todo: send these information toward proxy server to load into Notion database.
-                     */
-                }
-                NavTo(CONFIG.MainWS);
-            },
-            {},
-            false
+                            if(objectFound === false || objectFound === true){
+                                console.log("Trade not found")
+                            }else{
+                                console.log( cache.Position.direction)
+                                console.log(objectFound);
+                                cache.Position.reset();
+                                /**
+                                 * @todo: send these information toward proxy server to load into Notion database.
+                                 */
+                            }
+                            NavTo(CONFIG.MainWS);
+                        },
+                        {},
+                        false
+                    )
+                )
         )
     }
 }
