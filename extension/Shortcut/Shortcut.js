@@ -6,17 +6,20 @@ let showGuide = false;
 let NavShortCut = async () => {
     document.addEventListener("keydown", 
         (event) => {
-            if(event.altKey && event.key ==="H" ){
-                NavTo("History");
-            }
-            if(event.altKey && event.key ==="M" ){
-                NavTo(CONFIG.MainWS);
-            }
-            if(event.altKey && event.key ==="q" ){
-                cache.buttons.clickHandle();
-            }
-            if(event.altKey && event.key ==="a" ){
-                cache.buttons.clickHandle();
+            if(event.altKey){
+
+                switch(event.key){
+                    case SHORTCUT.NAV_HISTORY:
+                        NavTo("History");
+                        break;
+                    case SHORTCUT.NAV_MAIN_WS:
+                        NavTo(CONFIG.MainWS);
+                        break;
+                    case SHORTCUT.BUTTON_CLICK:
+                        cache.buttons.clickHandle();
+                    default:
+                        break;
+                }
             }
         }
     , true)
