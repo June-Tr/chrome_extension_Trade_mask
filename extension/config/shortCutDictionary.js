@@ -11,10 +11,20 @@ let SHORTCUT = {
     ELLIOT_3_CORRECTIVE: "3",
     ADD_3_TRIANLGE: "4",
     ADD_RECTANGLE: "5",
-    NAV_HISTORY: "h",
+    NAV_HISTORY: "n",
     REMOVE_TARGET: "d",
     OPEN_ORDER_ADJUSTMENT: "z",
     OPEN_ALERT_MENU: "F1",
+
+    //default CITY INDEX SHORTCUT
+    ADD_FIB: "f",
+    ADD_TREND_LINE: "t",
+    NAV_TO_PAST_CHART: "g",
+    ADD_VERTICAL_LINE: "v",
+    ADD_HORIZONTAL_LINE: "h"
+
+    //default TRADING VIEW SHORTCUT
+    SAVE_CANVAS:"s",
 
     TOGGLE_GUIDE: (event) => {
         return event.ctrlKey && event.keyCode == SHIFT
