@@ -24,3 +24,18 @@ let SHORTCUT = {
     }
 }
 
+// make sure the button does not has duplicate key shortcut.
+let map = new Map();
+(() => {
+    // map's ke ymust occur once
+    
+    for(shortcut of Object.entries(SHORTCUT)){
+        if(map.get(shortcut[1])){
+            alert(`Shortcut ALT + <${shortcut[1]}> is used for multiple functions \n
+                    \t  FUNCTIONs: <${shortcut[0]}>, <${map.get(shortcut[1])}>`);
+            continue;
+        }
+        map.set(shortcut[1], shortcut[0]);
+    }
+    
+})()
