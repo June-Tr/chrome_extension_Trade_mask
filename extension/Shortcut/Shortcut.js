@@ -48,61 +48,75 @@ let canvasListener = async () => {
 
                 doc.addEventListener("keydown", 
                     (event) => {
-                        if(event.ctrlKey && event.keyCode == "16"){ // shift
-                            
+                        if(SHORTCUT.TOGGLE_GUIDE(event)){ 
                             popupStatic = !popupStatic;
                             showGuide = !showGuide;
-                        }if(event.keyCode == 9){ // tab
+                        }
+                        
+                        if(SHORTCUT.LOCK_TARGET(event)){
                             findLockFeature(doc, "lock")
-                        }if(showGuide && event.altKey){
-                            Get("shortcut",0, false, doc).style.display = "flex"
                         }
-                        if(event.altKey && event.keyCode == "112"){ //F1
-                            let tickMenu = (doc.querySelector("div[class='button-dealticket__label']"))
-                            tickMenu.click();
-                            OpenAlertMenu();
-                        }
+                        
                         if(event.altKey){
                             switch(event.key){
-                                
-                                case "q":
+
+                                case showGuide:
+                                    Get("shortcut",0, false, doc).style.display = "flex";
+                                    break;
+
+                                case SHORTCUT.OPEN_ALERT_MENU:
+                                    doc.querySelector("div[class='button-dealticket__label']").click();
+                                    OpenAlertMenu();
+                                    break;
+
+                                case SHORTCUT.ADD_TEXT:
                                     clickCount ++;
                                     Open(doc, CONFIG.MENU_INDEX.TEXT, CONFIG.FEATURE.INSERT_TXT);
                                     break;
-                                case "a":
+
+                                case SHORTCUT.BUTTON_CLICK:
                                     cache.buttons.clickHandle();
                                     break;
-                                case  "\`":
+
+                                case SHORTCUT.ADD_LONG_PLANNER:
                                     clickCount ++;
                                     Open(doc, CONFIG.MENU_INDEX.ORDER, CONFIG.FEATURE.BUY);
                                     break;
-                                case "1":
+
+                                case SHORTCUT.ADD_SHORT_PLANNER:
                                     clickCount ++;
                                     Open(doc, CONFIG.MENU_INDEX.ORDER, CONFIG.FEATURE.SELL);
                                     break;
-                                case "2":
+
+                                case SHORTCUT.ELLIOT_5_IMPULSE:
                                     clickCount ++;
                                     Open(doc, CONFIG.MENU_INDEX.ELLIOT, CONFIG.FEATURE.IMPULSE);
                                     break;
-                                case "3":
+
+                                case SHORTCUT.ELLIOT_3_CORRECTIVE:
                                     clickCount ++;
                                     Open(doc, CONFIG.MENU_INDEX.ELLIOT, CONFIG.FEATURE.CORRECTIVE);
                                     break;
-                                case "4":
+
+                                case SHORTCUT.ADD_3_TRIANLGE:
                                     clickCount ++;
                                     Open(doc, CONFIG.MENU_INDEX.ELLIOT, CONFIG.FEATURE.TRIANGLE);
                                     break;
-                                case "5":
+
+                                case SHORTCUT.ADD_RECTANGLE:
                                     clickCount ++;
                                     Open(doc, CONFIG.MENU_INDEX.SHAPE, CONFIG.FEATURE.RECTANGLE);
                                     break;
-                                case "h":
+
+                                case SHORTCUT.NAV_HISTORY:
                                     NavTo("History");
                                     break;
-                                case "d":
+
+                                case SHORTCUT.REMOVE_TARGET:
                                     findLockFeature(doc, "remove")
                                     break;
-                                case "z":
+
+                                case SHORTCUT.OPEN_ORDER_ADJUSTMENT:
                                     openOrderAdjustment()
                                     break;
                                 

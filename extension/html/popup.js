@@ -2,6 +2,7 @@
 let popup = null;
 let guideTxt = [
     {symbol:`Shift`, guide:`Ruler`},
+    {symbol:`F1`, guide: `Open Alert Menu`},
     {symbol:`\``, guide:`Long position`},
     {symbol:`1`, guide:`Short position`},
     {symbol:`2`, guide: `Elliot impulse`},
@@ -10,7 +11,6 @@ let guideTxt = [
     {symbol:`F`, guide: `Fib retracement`},
     {symbol:`T`, guide: `Trend line`},
     {symbol:`Q`, guide: `Text`},
-    {symbol:`F1`, guide: `Open Alert Menu`},
     {symbol:`z`, guide: `Open Order adjustment`},
 ]
 let popupStatic = true;
