@@ -57,10 +57,10 @@ cache.Load._callbackOnPageLoad.push(
         IsInOpenPosition(
             // we want to extract and caching the information
             ExtractImportancePositionDetail,
-            () => {
-                // since we stay on the main page we need to tell the system, that the main page is load.
-                NavTo(CONFIG.MainWS);
-            });
+                () => {
+                    // since we stay on the main page we need to tell the system, that the main page is load.
+                    NavTo(CONFIG.MainWS);
+                });
     }    
 )
 

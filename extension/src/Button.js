@@ -73,7 +73,7 @@ class Button {
     }
     ExistHandle = () => {
         IsInOpenPosition(
-            () => { console.log("Button click:: Exit!! <<Still on an open position")},
+            () => { alert("Button click:: Exit!! <<Still on an open position")},
             () => // only try attempt finding the end of position if not on any position
                 NavTo( "History",
                     () => ExtractPrice(
@@ -96,7 +96,6 @@ class Button {
                                     // start looking for
                                     update = (i) => {return i - 1}
                                     objectFound = true;
-                                    console.log("=========================")
                                 }
                                 
                                 if(objectFound && found[i]?.direction != cache.Position.direction){

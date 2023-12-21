@@ -9,7 +9,14 @@
 - Add in multiple keyboard short cut to help with the work flow
 
 - My choice of personal data base is Notion: <- utilise their API to automatically transfer log over.
-
+## Requirement:
+must have 2 workspace:
+### 1. name:"EUR_USD"
+    - contain: 3 window 
+    - 1st: main work space with chart 
+    - 3rd: the position tab
+### 2. name:"History
+    - contain history window
 ## Todo:
 
 [ ] 

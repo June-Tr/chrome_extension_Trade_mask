@@ -21,6 +21,7 @@ let IsInOpenPosition = async (OnPositionCb, NoPositionCb = () => {}) => {
             // if there are no position, the header of the page will be "Position (0)"
             // else "Position (n)" where n is the number of trade :: n_trade >= 0
             // to suit my trading system, i will only have 1 position active at a time
+            
             let n_trade = Get(CONFIG.Html.POSITION, 2)
                             .getElementsByTagName("span")[0] // <span> Position (n_trade) </span>
                             .innerText.match(/([0-9][0-9]*)/g); // extract n_trace
@@ -57,27 +58,33 @@ let ExtractImportancePositionDetail = () => {
             var info = {
                 id: row.innerText.split('\n')[2],
                 dir: row.innerText.match(/(Buy)*(Sell)*/g)[0]
-            }     
-            NavTo("History", () =>{
-                ExtractPrice((found) => {
-                    // complete gather information
-                    
-                    for(order of found){
-                        if(order.id == info.id){
-                            cache.Position.state = true;
-                            cache.Position.direction = info.dir;
-                            cache.Position.entry = info.id;
-                            cache.Position.price = order.price;
-                            break;
+            }    
+            if(info.id == undefined){
+                let timeOutID= setTimeout(() => { 
+                    clearTimeout(timeOutID);
+                    return ExtractImportancePositionDetail();
+                }, 100);
+            }else{
+                NavTo("History", () =>{
+                    ExtractPrice((found) => {
+                        // complete gather information
+                        
+                        for(order of found){
+                            if(order.id == info.id){
+                                cache.Position.state = true;
+                                cache.Position.direction = info.dir;
+                                cache.Position.entry = info.id;
+                                cache.Position.price = order.price;
+                                break;
+                            }
                         }
-                    }
-                    // this call back will be executed if and only if we able to navigate to History ws in the first place.
-                    // then we must then we must return to the main work space (default) before do anything else
-                    // in this case: notify that the position state is changing
-                    NavTo(CONFIG.MainWS, cache.Position.Change);
-                })}
-            )
-                
+                        // this call back will be executed if and only if we able to navigate to History ws in the first place.
+                        // then we must then we must return to the main work space (default) before do anything else
+                        // in this case: notify that the position state is changing
+                        NavTo(CONFIG.MainWS, cache.Position.Change);
+                    })}
+                )
+            }
 
         } );       
 }

@@ -2,7 +2,6 @@
 
 let clickCount = 0;
 let showGuide = false;
-
 let NavShortCut = async () => {
     document.addEventListener("keydown", 
         (event) => {
@@ -57,18 +56,18 @@ let canvasListener = async () => {
                         }
                         
                         if(SHORTCUT.LOCK_TARGET(event)){
+                            
                             findLockFeature(doc, "lock")
                         }
-                        
+                        if(event.altKey && showGuide){
+                            Get("shortcut",0, false, doc).style.display = "flex";
+                        }
                         if(event.altKey){
                             switch(event.key){
 
-                                case showGuide:
-                                    Get("shortcut",0, false, doc).style.display = "flex";
-                                    break;
-
                                 case SHORTCUT.OPEN_ALERT_MENU:
                                     doc.querySelector("div[class='button-dealticket__label']").click();
+                                    
                                     OpenAlertMenu();
                                     break;
 
@@ -156,6 +155,7 @@ let openOrderAdjustment = async () => {
             positionPage = positionPage.querySelector("span[appdropdown]");
             positionPage.click();
             // navigate to the amend order button
+            
             TimeOutWrapper(
                 () => {
                     PotentialIssueAlert("OrderAdjustment:: Amend click");
@@ -188,34 +188,40 @@ let OpenAlertMenu = () => {
         () => {
             let form = document.getElementsByTagName("app-deal-ticket")[0]
             let alertButton = form.querySelector("input[value='alert']");
+            // focus so we can use the tab function
+            form.addEventListener("click", () => {
+                form.querySelectorAll("input")[3].focus();
+            },true)
+            form.addEventListener("keydown",
+                (event) => {
+                    if(event.key == "Tab"){
+                        let container = form.querySelector("div[class='market-prices__direction']");
+                        
+                        for(let i = 0; i < container.children.length; i++){
+                            let button = container.children[i]
+                            if(!button.classList.contains("selected")){
+                                
+                                button.click();
+                                form.click();
+                                break;
+                            }
+                        }
+                    }
+                }, true
+            )
             alertButton.click();
-        }
-    )
-}
-
-/**
- * handle enter via an enter and close via a click > only viable if we use shortcut
- */
-let SubmitViaEnter_Exit = async () => {
-    TimeOutWrapper(
-        () => {
-            // check if the header tab loaded and reader to be scrap
-            PotentialIssueAlert("Enter_exit shortcut")
-            return document.getElementsByTagName("app-deal-ticket").length < 1
-        },
-        
-        () => {
-            // Form will be the 3rd work space
-            let form = document.getElementsByTagName("app-deal-ticket")[0]
             
+            TimeOutWrapper(
+                () => {
+                    PotentialIssueAlert("Focus alert input box")
+                    return !form.querySelectorAll("label")[2].innerText.includes("SET ALERT")
+                },
+                () => {
+                    form.querySelectorAll("input")[3].focus();
+                }
+            );
             const ENTER = "13";
             const ESC = "27";
-           
-            let fields = (form.querySelectorAll("span[_ngcontent-ng-c3494671082]"));
-            fields[5].innerHTML = '';
-            form.querySelectorAll("app-number-input")[3].querySelector("input").focus();
-            //let blocks = form.querySelectorAll("div[_ngcontent-ng-c4118541851]");
-            
             form.addEventListener("keydown",
                 (event) => {
                     
@@ -237,7 +243,71 @@ let SubmitViaEnter_Exit = async () => {
                                 }
                             )
                         }else{
-                            console.log("button is disabled")
+                            alert("button is disabled")
+                        }
+                        butSubmit.click();
+
+                        
+                    } 
+                    if(event.keyCode == ESC){
+                        let butDestroy = form.querySelector("div[class='deal-ticket-header__destroy']");
+                        butDestroy.click();
+                    } 
+                }, true);
+            
+        }
+    )
+}
+
+/**
+ * handle enter via an enter and close via a click > only viable if we use shortcut
+ */
+let SubmitViaEnter_Exit = async (clear = true) => {
+    TimeOutWrapper(
+        () => {
+            // check if the header tab loaded and reader to be scrap
+            PotentialIssueAlert("Enter_exit shortcut")
+            return document.getElementsByTagName("app-deal-ticket").length < 1
+        },
+        
+        () => {
+            // Form will be the 3rd work space
+            let form = document.getElementsByTagName("app-deal-ticket")[0]
+            
+            
+           
+            let fields = (form.querySelectorAll("span[_ngcontent-ng-c3494671082]"));
+            if(clear) fields[5].innerHTML = '';
+            //let blocks = form.querySelectorAll("div[_ngcontent-ng-c4118541851]");
+            const ENTER = "13";
+            const ESC = "27";
+            
+            form.querySelectorAll("input")[6].focus();
+            form.addEventListener("click", () => {
+                form.querySelectorAll("input")[6].focus();
+            },true)
+            form.addEventListener("keydown",
+                (event) => {
+                    
+                    if(event.keyCode == ENTER){
+                        let butSubmit = form.querySelector("div[class='ticket-footer']");
+                        
+                        butSubmit = butSubmit.querySelector("button");
+                        if(!butSubmit.classList.contains("disabled")){
+                            TimeOutWrapper(
+                                () => {
+                                    PotentialIssueAlert("Close confirmation")
+                                    return document.getElementsByTagName("app-ticket-confirmation-list").length < 1
+                                },
+                                () => {
+                                    let form = document.getElementsByTagName("app-ticket-confirmation-list")[0]
+                                    
+                                    let button = form.querySelector("button")
+                                    button.click();
+                                }
+                            )
+                        }else{
+                            alert("button is disabled")
                         }
                         butSubmit.click();
 
@@ -256,31 +326,24 @@ let SubmitViaEnter_Exit = async () => {
 /**
  * @todo: need more adjust of solve
  */
-let ToggleOrderPosition = () => {
+let ToggleDirection = () => {
     TimeOutWrapper(
         () => {
             // check if the header tab loaded and reader to be scrap
-            PotentialIssueAlert("OrderAdjustment")
-            return !IsLoad(CONFIG.Html.POSITION)
+            PotentialIssueAlert("ToggleDirection")
+            return document.getElementsByTagName("app-deal-ticket").length < 1
         },
-        () => {
-            let positionPage = document.querySelectorAll("app-animated-scroll")[2];
-            let target = positionPage.querySelectorAll("div[cdkdrag]");
-            for(let i = 0; i<target.length; i++){
-                
-                if(target[i].classList.contains("main-mode__header--active")){
-                    target[i].classList.remove("main-mode__header--active");
-                }else{
-                    target[i].classList.add("main-mode__header--active");
-                    console.log(target[i].querySelector("span[data-test='header-tab-name-orders']"))
-                    target[i].querySelector("span[data-test='header-tab-name-orders']").click()
-                }
-            }
-        })
-}
-let findLockFeature = async (doc, name) =>{
-    try{
         
+        () => {
+            let form = document.getElementsByTagName("app-deal-ticket")[0]
+            let button = form.querySelector("div[class='market-prices__direction']");
+            //button.click();
+        }
+    )
+}
+
+let findLockFeature = async (doc, name  ) =>{
+    try{      
         let menu = Get("tv-floating-toolbar__widget", -1, true, doc);
 
         if(menu.length == 0)
@@ -299,6 +362,7 @@ let findLockFeature = async (doc, name) =>{
                     //event.stopImmediatePropagation();
                     event.preventDefault();
                 }, true)
+                
                 button.click();
                 //break;
             }
@@ -306,7 +370,7 @@ let findLockFeature = async (doc, name) =>{
         }
         
     }catch (e) {
-        console.log(e)
+        alert(e)
     }
 }
 
