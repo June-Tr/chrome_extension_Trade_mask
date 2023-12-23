@@ -3,26 +3,34 @@
 // cache for the handle so we dont need to find it every single time we need it
 
 let controlLoopCount = 0;
-let PotentialIssueAlert = (callerName, loopCount = 200) => {
+let PotentialIssueAlert = (callerName, loopCount = 200, terminatedOnIssue) => {
     if(controlLoopCount > loopCount){
         
-        alert("There are a potential of infinite loop @:" + callerName);
+        if(callerName) alert("There are a potential of infinite loop @:" + callerName);
         controlLoopCount = 0;
+
+        return (terminatedOnIssue) ? true : false;
     }
 }
 /**
- * 
- * @param {() => Boolean} sleepCondition filter function
+ * a wrapper around setTimeout
+ * @param {() => Boolean} sleepCondition filter function that if return true: sleep for <time> amount
  * @param {() => void} cb success promise 
  * @param {Int} time that this task will be sleep for 
+ * @param {alertMessage: Str, tolerance: Int, killswitch: Bool} config modify how the funciton react when potential failure occur: default terminate on failure
+ * @returns 
  */
-let TimeOutWrapper = async (sleepCondition, cb, time=100) => {
-    if(sleepCondition(alertMessage = "<Function>", tolerance = 200)){
-        PotentialIssueAlert(alertMessage, tolerance)
+let TimeOutWrapper = async (sleepCondition, cb, config = {alertMessage: false, tolerance: 200, killswitch: true},  time=100) => {
+    const {alertMessage, tolerance, killswitch} = config;
+
+    if(sleepCondition()){ 
+        if(PotentialIssueAlert(alertMessage, tolerance, killswitch))
+            return;
+
         let id = setTimeout(() => { 
             clearTimeout(id);
             controlLoopCount++;
-            return TimeOutWrapper(sleepCondition, cb, time);
+            return TimeOutWrapper(sleepCondition, cb, time, config);
         }, time);
     }else{
         controlLoopCount = 0;
@@ -72,18 +80,14 @@ let IsLoad = (name, InterestedObjIndex=0, isClass=true, from=document) => {
  */
 let ModifyHeader = async() => {
     TimeOutWrapper(
-        () => { 
-            PotentialIssueAlert("ModifyHeader",1000);
-            return !IsLoad(CONFIG.Html.ACCOUNT_SUMARY) || !IsLoad(CONFIG.Html.HEADER);
-        },
+        () => { return !IsLoad(CONFIG.Html.ACCOUNT_SUMARY) || !IsLoad(CONFIG.Html.HEADER)},
         () => {
             cache.header.main = Get(CONFIG.Html.HEADER);
             cache.header.balance = Get(CONFIG.Html.BALANCE)
 
             Get(CONFIG.Html.ACCOUNT_SUMARY).innerHTML = CONFIG.Replacement.ACCOUNT_SUMARY;
             cache.header.balance.innerHTML = CONFIG.Replacement.BALANCE;
-
-            
+      
             cache.header.main.innerHTML 
                 += CONFIG.Addition.Header.RiskFactorTitle
                     + CONFIG.Addition.Header.RiskFactor
@@ -91,8 +95,8 @@ let ModifyHeader = async() => {
                     + CONFIG.Addition.Header.ShortPosLog;
             
             PrepareCache();
-        },
-        20
+        },{alertMessage:"ModifyHeader", tolerance: 200, killswitch: false}
+        , 20
     )
 }
 
@@ -108,9 +112,8 @@ let PrepareCache = () =>{
                 || !IsLoad("bear",0, false)
             )
         },
-        () => {
-            cache.Load.PageLoad();
-        }
+        () =>  cache.Load.PageLoad()
+        ,{alertMessage:"ModifyHeader", tolerance: 200, killswitch: false}
     )
 }
 

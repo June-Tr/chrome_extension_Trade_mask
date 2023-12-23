@@ -36,10 +36,7 @@ let NavShortCut = async () => {
  */
 let canvasListener = async () => {
     TimeOutWrapper(
-        () => {
-            PotentialIssueAlert("CanvasListener")
-            return document.getElementsByTagName("tpdwt-tvp-chart").length === 0
-        },
+        () => {return document.getElementsByTagName("tpdwt-tvp-chart").length === 0},
         () => {
             // This is a sub document of the main HTML
             let ifrm = document.getElementsByTagName("tpdwt-tvp-chart")[0].children[0].children[0];
@@ -139,7 +136,7 @@ let canvasListener = async () => {
                     },
                     true
                 )
-            }
+            },{alertMessage:"canvasListener", tolerance: 200, killswitch: false}
     )
 }
 
@@ -147,14 +144,9 @@ let canvasListener = async () => {
 
 let openOrderAdjustment = async () => {
     TimeOutWrapper(
+        () => { return !IsLoad("ag-pinned-left-cols-container")},
         () => {
-            // check if the header tab loaded and reader to be scrap
-            PotentialIssueAlert("OrderAdjustment")
-            return !IsLoad("ag-pinned-left-cols-container")
-        },
-        () => {
-            let positionPage = Get("ag-pinned-left-cols-container");
-            positionPage = positionPage.querySelector("span[appdropdown]");
+            positionPage = Get("ag-pinned-left-cols-container").querySelector("span[appdropdown]");
             if(positionPage != null) 
                 positionPage.click();
             else{
@@ -178,83 +170,65 @@ let openOrderAdjustment = async () => {
                 }
 
             )
-        })
+        },{alertMessage:"openOrderAdjustment", tolerance: 200, killswitch: false})
 }
 
 /**
- * Navigate to the alert menu.
+ * (1) Navigate to the alert menu.
+ * (2) Focus the window
+ * (3) Add Submittion on Enter, Close on ESC button press
  */
 let OpenAlertMenu = () => {
     TimeOutWrapper(
-        () => {
-            // check if the header tab loaded and reader to be scrap
-            PotentialIssueAlert("OpenAlertMenu")
-            return document.getElementsByTagName("app-deal-ticket").length < 1
-        }, 
+        () => {return document.getElementsByTagName("app-deal-ticket").length < 1 }, 
         () => {
             let form = document.getElementsByTagName("app-deal-ticket")[0]
             // focus so we can use the tab function
-            form.addEventListener("click", () => {
-                form.querySelectorAll("input")[3].focus();
-            },true)
+            TimeOutWrapper(
+                () => { return !form.querySelectorAll("label")[2].innerText.includes("SET ALERT")},
+                () => { form.querySelectorAll("input")[3].focus() },
+                {alertMessage:"OpenAlertMenu: Focus", tolerance: 200, killswitch: false}
+            );
+
+            form.addEventListener("click", () => {  form.querySelectorAll("input")[3].focus() },true)
+            form.querySelector("input[value='alert']").click();
             form.addEventListener("keydown",
                 (event) => {
-                    if(event.key == "Tab"){
+                    if(event.keyCode == SHORTCUT.SUBMIT_FORM){
+                        let butSubmit = form.querySelector("div[class='ticket-footer']")
+                                            .querySelector("button");
+                
+                        if(butSubmit.classList.contains("disabled")){
+                            alert("OpenAlertMenu: button is disabled")
+                        }else{
+                            TimeOutWrapper(
+                                () => {return document.getElementsByTagName("app-ticket-confirmation-list").length < 1 },
+                                () => document.getElementsByTagName("app-ticket-confirmation-list")[0].querySelector("button").click(),
+                                {alertMessage:"OpenAlertMenu: Close confirmation", tolerance: 200, killswitch: true}
+                            )
+                        }
+                        butSubmit.click();     
+                    }
+                    if(SHORTCUT.TOGGLE_DIRECTION(event)){
                         let container = form.querySelector("div[class='market-prices__direction']");
                         
                         for(let i = 0; i < container.children.length; i++){
                             let button = container.children[i]
                             if(!button.classList.contains("selected")){
-                                
                                 button.click();
                                 form.click();
                                 break;
                             }
                         }
-                    }
-                }, true
-            )
-            form.querySelector("input[value='alert']").click();
-            
-            TimeOutWrapper(
-                () => {
-                    PotentialIssueAlert("Focus alert input box")
-                    return !form.querySelectorAll("label")[2].innerText.includes("SET ALERT")
-                },() => {
-                    form.querySelectorAll("input")[3].focus();
-                }
-            );
-            
-            form.addEventListener("keydown",
-                (event) => {
-                    
-                    if(event.keyCode == ENTER){
-                        let butSubmit = form.querySelector("div[class='ticket-footer']");
-                        
-                        butSubmit = butSubmit.querySelector("button");
-                        if(!butSubmit.classList.contains("disabled")){
-                            TimeOutWrapper(
-                                () => {
-                                    PotentialIssueAlert("Close confirmation")
-                                    return document.getElementsByTagName("app-ticket-confirmation-list").length < 1
-                                },
-                                () => document.getElementsByTagName("app-ticket-confirmation-list")[0].querySelector("button").click()
-                            )
-                        }else{
-                            alert("button is disabled")
-                        }
-                        butSubmit.click();
-
-                        
                     } 
-                    if(event.keyCode == ESC){
-                        let butDestroy = form.querySelector("div[class='deal-ticket-header__destroy']");
-                        butDestroy.click();
+                    if(event.keyCode == SHORTCUT.CLOSE_FORM){
+                        form.querySelector("div[class='deal-ticket-header__destroy']").click();
                     } 
                 }, true);
             
         }
-    )
+        ,{alertMessage:"OpenAlertMenu", tolerance: 200, killswitch: false})
+    
 }
 
 /**

@@ -4,6 +4,8 @@ let F1 = "112";
 const ENTER = "13";
 const ESC = "27";
 let SHORTCUT = {
+    SUBMIT_FORM: ENTER,
+    CLOSE_FORM: ESC,
     ADD_TEXT : "q",
     BUTTON_CLICK: "a",
     ADD_LONG_PLANNER: "\`",
@@ -27,7 +29,9 @@ let SHORTCUT = {
 
     //default TRADING VIEW SHORTCUT
     SAVE_CANVAS:"s",
-
+    TOGGLE_DIRECTION: (event) => {
+        event.keyCode == TAB;
+    },
     TOGGLE_GUIDE: (event) => {
         return event.ctrlKey && event.keyCode == SHIFT
     },
