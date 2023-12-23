@@ -20,6 +20,10 @@ const CONFIG =  {
         RECTANGLE: 6,
     },
     Html :{
+        POSITION_SL: 4,
+        ORDER_SL: 5,
+        POSITION_TARGET:8,
+        ORDER_TARGET: 9,
         ACCOUNT_SUMARY: "balance-dropdown",
         POSITION: "header-tab",
         POS_detail: "ag-row-even",

@@ -127,7 +127,6 @@ let canvasListener = async () => {
                     }
                 , true)
                 }
-
                 doc.addEventListener("keyup", 
                     (event) => {
                         if(showGuide && event.keyCode == 18){   
@@ -137,12 +136,36 @@ let canvasListener = async () => {
                     },
                     true
                 )
+                doc.addEventListener("contextmenu", rightClickHandler, true)
+
+                
             },{alertMessage:"canvasListener", tolerance: 200, killswitch: false}
     )
 }
 
+/**
+ * This deal with rightclick to place an entry order
+ */
+let rightClickHandler = async () => {
+    TimeOutWrapper(
+        () => {
+            return secondaryDocument.querySelector("span[class='context-menu-wrapper']") == null},
+        () => {
+            let menu = secondaryDocument.querySelector("span[class='context-menu-wrapper']")
+            if(menu.querySelectorAll("span").length == 0) SleepAndRerun(rightClickHandler, 300);
 
+            let tradeButton = (secondaryDocument.querySelectorAll("span[class='label-1If3beUH']")[2])
 
+            if("Create Limit Order..." == (tradeButton.innerText)){
+                tradeButton.addEventListener("click",() => {HidePaperPLPositionForm(false)}, true);
+            }
+        }
+        , {alertMessage: false, tolerance: 30, killswitch: true}
+    )
+}
+/**
+ * Open the order, position panel to : close, adjust
+ */
 let openOrderAdjustment = async () => {
     TimeOutWrapper(
         () => { return !IsLoad("ag-pinned-left-cols-container")},
@@ -223,18 +246,25 @@ let OpenAlertMenu = () => {
 /**
  * On the form that adjust position
  */
-let HidePaperPLPositionForm = async () => {
+let HidePaperPLPositionForm = async (isPosition=true) => {
     TimeOutWrapper(
         () => {return document.getElementsByTagName("app-deal-ticket").length < 1},
         () => {
+
             let form = document.getElementsByTagName("app-deal-ticket")[0];
             let value = (form.querySelectorAll("span[_ngcontent-ng-c3494671082]"))[5]
             
             if(value) value.style.opacity = "0";
             // target, stoplost numerical number
             let textInput = form.querySelectorAll("input[type='text']");
-            textInput[4].style.opacity = "0";
-            textInput[8].style.opacity = "0";
+            
+            textInput[(isPosition )? CONFIG.Html.POSITION_TARGET: CONFIG.Html.ORDER_TARGET].style.opacity = "0";
+            
+            // we need to keep the value for SL to adjust the size
+            if(isPosition){
+                textInput[CONFIG.Html.POSITION_SL].style.opacity = "0";
+            
+            }
         },
         {alertMessage: "HidePaperPL", tolerance: 100, killswitch: true}
     )
