@@ -37,17 +37,7 @@ let TimeOutWrapper = async (sleepCondition, cb, config = {alertMessage: false, t
         cb();
     }
 }
-/**
- * Like the Time out but this case, sleep once
- * @param {*} cb 
- * @param {*} time 
- */
-let SleepAndRerun = async (cb, time = 100) => {
-    let id = setTimeout(() => { 
-        clearTimeout(id);
-        cb();
-    }, time);
-}
+
 /**
  * Wrapper <- to improve readability. Default object will be whole document.
  * @param {class name/ id} name 
@@ -106,14 +96,9 @@ let ModifyHeader = async() => {
 let PrepareCache = () =>{
 
     TimeOutWrapper(
-        () => {
-            PotentialIssueAlert("PrepareCache")
-            return (!IsLoad("bull",0, false) 
-                || !IsLoad("bear",0, false)
-            )
-        },
+        () => {return !IsLoad("bull",0, false) || !IsLoad("bear",0, false)},
         () =>  cache.Load.PageLoad()
-        ,{alertMessage:"ModifyHeader", tolerance: 200, killswitch: false}
+        ,{alertMessage:"PrepareCache", tolerance: 200, killswitch: false}
     )
 }
 

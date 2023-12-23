@@ -13,39 +13,6 @@ cache.Load._callbackOnPageLoad.push(
     }
 )
 let initLoad =true;
-// once the page is load, add the listen event for the close position click
-// cache.Main._cbOnMainReload.push(
-//     // since we look 
-//     () => {
-//         TimeOutWrapper(
-//             () => {
-//                 // check if the header tab loaded and reader to be scrap
-//                 PotentialIssueAlert("Add closing handler")
-//                 return !IsLoad("ag-pinned-right-cols-container")
-//             },
-//             () => {
-//                 let positionPage = Get("ag-pinned-right-cols-container");
-//                 console.log(positionPage)
-//                 let observer = new MutationObserver(() => {
-//                     if(initLoad){
-//                         return initLoad=false;
-//                     }
-//                     IsInOpenPosition(
-//                         () => {
-//                             console.log("entry");
-//                         },
-//                         () => {
-//                             console.log("exit")
-//                         }
-//                     )
-//                 })
-//                 observer.observe(positionPage,
-//                     { attributes: true, childList: true, subtree: true }
-//                     )
-//             }
-//         )
-//     }
-// )
 
 cache.Load._callbackOnPageLoad.push(
     NavShortCut
@@ -67,4 +34,3 @@ cache.Load._callbackOnPageLoad.push(
 cache.Main._cbOnMainReload.push(
     canvasListener
 )
-//cache.Load._callbackOnPageLoad.push(cache.Position.test);

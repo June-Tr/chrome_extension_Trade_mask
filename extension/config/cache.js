@@ -1,4 +1,15 @@
 /**
+ * Like the Time out but this case, sleep once
+ * @param {*} cb 
+ * @param {*} time 
+ */
+let SleepAndRerun = async (cb, time = 100) => {
+    let id = setTimeout(() => { 
+        clearTimeout(id);
+        cb();
+    }, time);
+}
+/**
  * Cache: store most use feature,  and itself store, call event
  */
 var cache = {
@@ -38,15 +49,8 @@ let cooldown = false;
 cache.Main.Reload = () => {
     if(!cooldown){
         cooldown = true;
-        cache.Main._cbOnMainReload.forEach((cb) => {
-            console.log(cb);
-            cb();
-        });
-
-        let id = setTimeout(() => { 
-            clearTimeout(id);
-            cooldown = false;
-        }, 500);
+        cache.Main._cbOnMainReload.forEach((cb) => {cb()});
+        SleepAndRerun(()=>cooldown = false, 500)
     }
 }
 cache.Position.Change = async () => {
