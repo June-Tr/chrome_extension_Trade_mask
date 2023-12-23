@@ -167,6 +167,7 @@ let openOrderAdjustment = async () => {
                     positionPage.click();
                     // short cut to enter, exit
                     SubmitViaEnter_Exit();
+                    HidePaperPLPositionForm();
                 }
 
             )
@@ -186,12 +187,17 @@ let OpenAlertMenu = () => {
             // focus so we can use the tab function
             TimeOutWrapper(
                 () => { return !form.querySelectorAll("label")[2].innerText.includes("SET ALERT")},
-                () => { form.querySelectorAll("input")[3].focus() },
-                {alertMessage:"OpenAlertMenu: Focus", tolerance: 200, killswitch: false}
+                () => {
+                    form.querySelector("input[value='alert']").click(); 
+                    // focus after the tab switch
+                    TimeOutWrapper(
+                        () => { return !form.querySelector("span")?.children[2].classList.contains("selected")},
+                        () => {form.getElementsByTagName("input")[3].focus()}
+                    )
+                },{alertMessage:"OpenAlertMenu: Focus", tolerance: 200, killswitch: false}
             );
 
-            form.addEventListener("click", () => {  form.querySelectorAll("input")[3].focus() },true)
-            form.querySelector("input[value='alert']").click();
+            form.addEventListener("click", () => {  form.getElementsByTagName("input")[3].focus() },true)
             form.addEventListener("keydown",
                 (event) => {
                     if(event.keyCode == SHORTCUT.SUBMIT_FORM){
@@ -206,8 +212,7 @@ let OpenAlertMenu = () => {
                                 () => document.getElementsByTagName("app-ticket-confirmation-list")[0].querySelector("button").click(),
                                 {alertMessage:"OpenAlertMenu: Close confirmation", tolerance: 200, killswitch: true}
                             )
-                        }
-                        butSubmit.click();     
+                        }butSubmit.click();     
                     }
                     if(SHORTCUT.TOGGLE_DIRECTION(event)){
                         let container = form.querySelector("div[class='market-prices__direction']");
@@ -225,12 +230,30 @@ let OpenAlertMenu = () => {
                         form.querySelector("div[class='deal-ticket-header__destroy']").click();
                     } 
                 }, true);
-            
         }
         ,{alertMessage:"OpenAlertMenu", tolerance: 200, killswitch: false})
-    
 }
 
+/**
+ * On the form that adjust position
+ */
+let HidePaperPLPositionForm = async () => {
+    TimeOutWrapper(
+        () => {return document.getElementsByTagName("app-deal-ticket").length < 1},
+        () => {
+            let form = document.getElementsByTagName("app-deal-ticket")[0];
+            let value = (form.querySelectorAll("span[_ngcontent-ng-c3494671082]"))[5]
+            console.log(value)
+            if(value) value.style.opacity = "0";
+            // target, stoplost numerical number
+            let textInput = form.querySelectorAll("input[type='text']");
+            textInput[4].style.opacity = "0";
+            textInput[8].style.opacity = "0";
+        },
+        {alertMessage: "HidePaperPL", tolerance: 100, killswitch: true}
+
+    )
+}
 /**
  * handle enter via an enter and close via a click > only viable if we use shortcut
  */
@@ -245,65 +268,39 @@ let SubmitViaEnter_Exit = async (clear = true) => {
         () => {
             // Form will be the 3rd work space
             let form = document.getElementsByTagName("app-deal-ticket")[0]
-            
-            
-            try{
-                let fields = (form.querySelectorAll("span[_ngcontent-ng-c3494671082]"));
-                if(clear) fields[5].innerHTML = '';
-            }catch (e){
-                console.log(e)
-            }
-            
-            //let blocks = form.querySelectorAll("div[_ngcontent-ng-c4118541851]");
-            const ENTER = "13";
-            const ESC = "27";
-            
+ 
             form.querySelectorAll("input")[6].focus();
             form.addEventListener("click", () => {
                 form.querySelectorAll("input")[6].focus();
             },true)
-            try{
-                // delete the order price
-                let textInput = form.querySelectorAll("input[type='text']");
-                textInput[4].style.opacity = "0";
-                textInput[8].style.opacity = "0";
-            }catch(e){
-                console.log(e)
-            }
             form.addEventListener("keydown",
                 (event) => {
-                    
-                    if(event.keyCode == ENTER){
+                    if(event.keyCode == SHORTCUT.SUBMIT_FORM){
                         let butSubmit = form.querySelector("div[class='ticket-footer']");
                         
                         butSubmit = butSubmit.querySelector("button");
-                        if(!butSubmit.classList.contains("disabled")){
-                            TimeOutWrapper(
-                                () => {
-                                    PotentialIssueAlert("Close confirmation")
-                                    return document.getElementsByTagName("app-ticket-confirmation-list").length < 1
-                                },
-                                () => {
-                                    let form = document.getElementsByTagName("app-ticket-confirmation-list")[0]
-                                    
-                                    let button = form.querySelector("button")
-                                    button.click();
-                                }
-                            )
-                        }else{
+                        if(butSubmit.classList.contains("disabled")){
                             alert("button is disabled")
+                            
+                        }else{
+                            TimeOutWrapper(
+                                () => {return document.getElementsByTagName("app-ticket-confirmation-list").length < 1 },
+                                () => document.getElementsByTagName("app-ticket-confirmation-list")[0]
+                                                .click(),
+                                {alertMessage: "SubmitViaEnter_Exit: Close confirmation", tolerance: 100, killswitch: true}
+                            )
                         }
                         butSubmit.click();
-
                         
                     } 
-                    if(event.keyCode == ESC){
-                        let butDestroy = form.querySelector("div[class='deal-ticket-header__destroy']");
-                        butDestroy.click();
+                    if(event.keyCode == SHORTCUT.CLOSE_FORM){
+                        form.querySelector("div[class='deal-ticket-header__destroy']")
+                            .click();
                     } 
                 }, true);
         }
-    )
+        ,{alertMessage:"SubmitViaEnter_Exit", tolerance: 200, killswitch: false})
+    
 
 }
 

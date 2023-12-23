@@ -30,7 +30,7 @@ let SHORTCUT = {
     //default TRADING VIEW SHORTCUT
     SAVE_CANVAS:"s",
     TOGGLE_DIRECTION: (event) => {
-        event.keyCode == TAB;
+        return event.keyCode == TAB;
     },
     TOGGLE_GUIDE: (event) => {
         return event.ctrlKey && event.keyCode == SHIFT
