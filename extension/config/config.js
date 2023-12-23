@@ -1,6 +1,5 @@
 
 const CONFIG =  {
-    RiskFactor: 46,
     MainWS: "EUR_USD",
     MENU: "group-2JyOhh7Z",
     MENU_INDEX : {
@@ -50,4 +49,4 @@ const CONFIG =  {
         }
     }
 }
-CONFIG.Addition.Header.RiskFactor = `<div class='RFactor'> \$${CONFIG.RiskFactor} </div>`;
+CONFIG.Addition.Header.RiskFactor = `<div class='RFactor'> \$${ACCOUNT.RiskFactor} </div>`;

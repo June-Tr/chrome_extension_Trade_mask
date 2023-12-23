@@ -50,11 +50,13 @@ let canvasListener = async () => {
                 doc.addEventListener("keydown", 
                     (event) => {
                         if(event.code  == "Space"){
+                            console.log("Space hit")
+                            console.log(spaceBarToggle)
                             if(event.ctrlKey){
                                 spaceBarToggle = !spaceBarToggle;
                             }
                             if(spaceBarToggle)
-                                openFromTargetMenu(doc, "settings")
+                                openFromTargetMenu("settings")
                         }
                         if(!stopper && SHORTCUT.TOGGLE_GUIDE(event)){
                             popupStatic = !popupStatic;
@@ -64,7 +66,7 @@ let canvasListener = async () => {
                         }
                         
                         if(SHORTCUT.LOCK_TARGET(event)){
-                            openFromTargetMenu(doc, "lock")
+                            openFromTargetMenu("lock")
                         }
                         if(event.altKey && showGuide){
                             Get("shortcut",0, false, doc).style.display = "flex";
@@ -314,12 +316,13 @@ let SubmitViaEnter_Exit = async (entryInputIndex = 6) => {
  */
 let openFromTargetMenu = async (name) =>{
     let menu = Get("tv-floating-toolbar__widget", -1, true, secondaryDocument);
-
+    console.log(name)
     if(menu.length > 0){
         for(let i = 0; i < menu.length; i++){
             let button = menu[i].getElementsByTagName("div")[0]
+            console.log(button)
             if(button.getAttribute('data-name') == name){
-
+                
                 // make sure no Propagation else lead to double click (left same state)
                 button.addEventListener("click", (event) => {  event.preventDefault() }, true)
                 button.click();
