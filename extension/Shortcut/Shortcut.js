@@ -1,12 +1,17 @@
 // Add keydown listener to listen for key press
-
+let secondaryDocument = null;
 let clickCount = 0;
 let showGuide = false;
+let onPosition = false;
+let spaceBarToggle = true;
+let stopper = false;
+/**
+ * Navigation shortcut: WILL ONLY BE EXECUTED ONCE during page load event (main doc is loaded)
+ */
 let NavShortCut = async () => {
     document.addEventListener("keydown", 
         (event) => {
             if(event.altKey){
-
                 switch(event.key){
                     case SHORTCUT.NAV_HISTORY:
                         NavTo("History");
@@ -25,8 +30,11 @@ let NavShortCut = async () => {
 }
 
 
+/**
+ * Control loop, that every single time workspace reload, add the listener to the target
+ * 
+ */
 let canvasListener = async () => {
-    
     TimeOutWrapper(
         () => {
             PotentialIssueAlert("CanvasListener")
@@ -36,44 +44,43 @@ let canvasListener = async () => {
             // This is a sub document of the main HTML
             let ifrm = document.getElementsByTagName("tpdwt-tvp-chart")[0].children[0].children[0];
             let doc = ifrm.contentDocument? ifrm.contentDocument: ifrm.contentWindow.document;
-
-            // ensure doc is written during second load
-            if(Get("group-2JyOhh7Z", 0, true, doc) == null){
-                let id = setTimeout(() => { 
-                    clearTimeout(id);
-                    return canvasListener();
-                }, 1000);
-            }
-            
-            else {
+            secondaryDocument = doc;
+            // ensure doc is written during second load  
+            if(!Get("group-2JyOhh7Z", 0, true, secondaryDocument)){
+                SleepAndRerun(canvasListener, 1000);
+            }else {
                 createPopup(doc)
-
                 doc.addEventListener("keydown", 
                     (event) => {
-                        if(SHORTCUT.TOGGLE_GUIDE(event)){ 
+                        if(event.code  == "Space"){
+                            if(event.ctrlKey){
+                                spaceBarToggle = !spaceBarToggle;
+                            }
+                            if(spaceBarToggle)
+                                openFromTargetMenu(doc, "settings")
+                        }
+                        if(!stopper && SHORTCUT.TOGGLE_GUIDE(event)){
                             popupStatic = !popupStatic;
                             showGuide = !showGuide;
+                            stopper = true;
+                            SleepAndRerun(() => {stopper = false;});
                         }
                         
                         if(SHORTCUT.LOCK_TARGET(event)){
-                            
-                            findLockFeature(doc, "lock")
+                            openFromTargetMenu(doc, "lock")
                         }
                         if(event.altKey && showGuide){
                             Get("shortcut",0, false, doc).style.display = "flex";
                         }
                         if(event.altKey){
                             switch(event.key){
-
                                 case SHORTCUT.OPEN_ALERT_MENU:
                                     doc.querySelector("div[class='button-dealticket__label']").click();
-                                    
                                     OpenAlertMenu();
                                     break;
 
                                 case SHORTCUT.ADD_TEXT:
-                                    clickCount ++;
-                                    Open(doc, CONFIG.MENU_INDEX.TEXT, CONFIG.FEATURE.INSERT_TXT);
+                                    OpenDrawingToolMenu(CONFIG.MENU_INDEX.TEXT, CONFIG.FEATURE.INSERT_TXT);
                                     break;
 
                                 case SHORTCUT.BUTTON_CLICK:
@@ -81,33 +88,27 @@ let canvasListener = async () => {
                                     break;
 
                                 case SHORTCUT.ADD_LONG_PLANNER:
-                                    clickCount ++;
-                                    Open(doc, CONFIG.MENU_INDEX.ORDER, CONFIG.FEATURE.BUY);
+                                    OpenDrawingToolMenu(CONFIG.MENU_INDEX.ORDER, CONFIG.FEATURE.BUY);
                                     break;
 
                                 case SHORTCUT.ADD_SHORT_PLANNER:
-                                    clickCount ++;
-                                    Open(doc, CONFIG.MENU_INDEX.ORDER, CONFIG.FEATURE.SELL);
+                                    OpenDrawingToolMenu(CONFIG.MENU_INDEX.ORDER, CONFIG.FEATURE.SELL);
                                     break;
 
                                 case SHORTCUT.ELLIOT_5_IMPULSE:
-                                    clickCount ++;
-                                    Open(doc, CONFIG.MENU_INDEX.ELLIOT, CONFIG.FEATURE.IMPULSE);
+                                    OpenDrawingToolMenu(CONFIG.MENU_INDEX.ELLIOT, CONFIG.FEATURE.IMPULSE);
                                     break;
 
                                 case SHORTCUT.ELLIOT_3_CORRECTIVE:
-                                    clickCount ++;
-                                    Open(doc, CONFIG.MENU_INDEX.ELLIOT, CONFIG.FEATURE.CORRECTIVE);
+                                    OpenDrawingToolMenu(CONFIG.MENU_INDEX.ELLIOT, CONFIG.FEATURE.CORRECTIVE);
                                     break;
 
                                 case SHORTCUT.ADD_3_TRIANLGE:
-                                    clickCount ++;
-                                    Open(doc, CONFIG.MENU_INDEX.ELLIOT, CONFIG.FEATURE.TRIANGLE);
+                                    OpenDrawingToolMenu(CONFIG.MENU_INDEX.ELLIOT, CONFIG.FEATURE.TRIANGLE);
                                     break;
 
                                 case SHORTCUT.ADD_RECTANGLE:
-                                    clickCount ++;
-                                    Open(doc, CONFIG.MENU_INDEX.SHAPE, CONFIG.FEATURE.RECTANGLE);
+                                    OpenDrawingToolMenu(CONFIG.MENU_INDEX.SHAPE, CONFIG.FEATURE.RECTANGLE);
                                     break;
 
                                 case SHORTCUT.NAV_HISTORY:
@@ -115,7 +116,7 @@ let canvasListener = async () => {
                                     break;
 
                                 case SHORTCUT.REMOVE_TARGET:
-                                    findLockFeature(doc, "remove")
+                                    openFromTargetMenu("remove")
                                     break;
 
                                 case SHORTCUT.OPEN_ORDER_ADJUSTMENT:
@@ -131,8 +132,7 @@ let canvasListener = async () => {
 
                 doc.addEventListener("keyup", 
                     (event) => {
-                        if(showGuide && event.keyCode == 18){
-                            
+                        if(showGuide && event.keyCode == 18){   
                             event.preventDefault();
                             Get("shortcut",0, false, doc).style.display = "none";
                         }
@@ -142,6 +142,8 @@ let canvasListener = async () => {
             }
     )
 }
+
+
 
 let openOrderAdjustment = async () => {
     TimeOutWrapper(
@@ -153,7 +155,12 @@ let openOrderAdjustment = async () => {
         () => {
             let positionPage = Get("ag-pinned-left-cols-container");
             positionPage = positionPage.querySelector("span[appdropdown]");
-            positionPage.click();
+            if(positionPage != null) 
+                positionPage.click();
+            else{
+                alert("There are no Order/Position");
+                return;
+            }
             // navigate to the amend order button
             
             TimeOutWrapper(
@@ -183,11 +190,9 @@ let OpenAlertMenu = () => {
             // check if the header tab loaded and reader to be scrap
             PotentialIssueAlert("OpenAlertMenu")
             return document.getElementsByTagName("app-deal-ticket").length < 1
-        },
-        
+        }, 
         () => {
             let form = document.getElementsByTagName("app-deal-ticket")[0]
-            let alertButton = form.querySelector("input[value='alert']");
             // focus so we can use the tab function
             form.addEventListener("click", () => {
                 form.querySelectorAll("input")[3].focus();
@@ -209,19 +214,17 @@ let OpenAlertMenu = () => {
                     }
                 }, true
             )
-            alertButton.click();
+            form.querySelector("input[value='alert']").click();
             
             TimeOutWrapper(
                 () => {
                     PotentialIssueAlert("Focus alert input box")
                     return !form.querySelectorAll("label")[2].innerText.includes("SET ALERT")
-                },
-                () => {
+                },() => {
                     form.querySelectorAll("input")[3].focus();
                 }
             );
-            const ENTER = "13";
-            const ESC = "27";
+            
             form.addEventListener("keydown",
                 (event) => {
                     
@@ -235,12 +238,7 @@ let OpenAlertMenu = () => {
                                     PotentialIssueAlert("Close confirmation")
                                     return document.getElementsByTagName("app-ticket-confirmation-list").length < 1
                                 },
-                                () => {
-                                    let form = document.getElementsByTagName("app-ticket-confirmation-list")[0]
-                                    
-                                    let button = form.querySelector("button")
-                                    button.click();
-                                }
+                                () => document.getElementsByTagName("app-ticket-confirmation-list")[0].querySelector("button").click()
                             )
                         }else{
                             alert("button is disabled")
@@ -275,9 +273,13 @@ let SubmitViaEnter_Exit = async (clear = true) => {
             let form = document.getElementsByTagName("app-deal-ticket")[0]
             
             
-           
-            let fields = (form.querySelectorAll("span[_ngcontent-ng-c3494671082]"));
-            if(clear) fields[5].innerHTML = '';
+            try{
+                let fields = (form.querySelectorAll("span[_ngcontent-ng-c3494671082]"));
+                if(clear) fields[5].innerHTML = '';
+            }catch (e){
+                console.log(e)
+            }
+            
             //let blocks = form.querySelectorAll("div[_ngcontent-ng-c4118541851]");
             const ENTER = "13";
             const ESC = "27";
@@ -286,6 +288,14 @@ let SubmitViaEnter_Exit = async (clear = true) => {
             form.addEventListener("click", () => {
                 form.querySelectorAll("input")[6].focus();
             },true)
+            try{
+                // delete the order price
+                let textInput = form.querySelectorAll("input[type='text']");
+                textInput[4].style.opacity = "0";
+                textInput[8].style.opacity = "0";
+            }catch(e){
+                console.log(e)
+            }
             form.addEventListener("keydown",
                 (event) => {
                     
@@ -323,85 +333,65 @@ let SubmitViaEnter_Exit = async (clear = true) => {
 
 }
 
-/**
- * @todo: need more adjust of solve
- */
-let ToggleDirection = () => {
-    TimeOutWrapper(
-        () => {
-            // check if the header tab loaded and reader to be scrap
-            PotentialIssueAlert("ToggleDirection")
-            return document.getElementsByTagName("app-deal-ticket").length < 1
-        },
-        
-        () => {
-            let form = document.getElementsByTagName("app-deal-ticket")[0]
-            let button = form.querySelector("div[class='market-prices__direction']");
-            //button.click();
-        }
-    )
-}
-
-let findLockFeature = async (doc, name  ) =>{
+let openFromTargetMenu = async (name  ) =>{
     try{      
-        let menu = Get("tv-floating-toolbar__widget", -1, true, doc);
+        let menu = Get("tv-floating-toolbar__widget", -1, true, secondaryDocument);
 
         if(menu.length == 0)
             return;
 
         let found = false;
         for(let i = 0; i < menu.length; i++){
-            let child = menu[i]
-            
-            let button = child.getElementsByTagName("div")[0]
+            let button = menu[i].getElementsByTagName("div")[0]
             if(button.getAttribute('data-name') == name){
-                
                 found = true;
                 // make sure no Propagation else lead to double click (left same state)
                 button.addEventListener("click", (event) => {
-                    //event.stopImmediatePropagation();
                     event.preventDefault();
                 }, true)
                 
                 button.click();
-                //break;
+                break;
             }
-            
-        }
-        
+        }      
     }catch (e) {
         alert(e)
     }
 }
 
-let Open = async (doc, menuIndex, feature) => {
-    // open main menu
-    //console.log(Get( CONFIG.MENU, 0, true, doc).getElementsByTagName("span"))
-    Get( CONFIG.MENU, 0, true, doc).getElementsByTagName("span")[menuIndex].click();
-    OpenFeature(doc, feature);
+/**
+ * 
+ * @param {*} menuIndex 
+ * @param {*} toolName 
+ */
+let OpenDrawingToolMenu = async (menuIndex, toolName) => {
+    clickCount ++;
+    Get( CONFIG.MENU, 0, true, secondaryDocument).getElementsByTagName("span")[menuIndex].click();
+    OpenDrawingTool(toolName);
 }
 
-let OpenFeature = async (doc, feature) => {
+/**
+ * 
+ * @param {*} doc 
+ * @param {*} toolName 
+ */
+let OpenDrawingTool = async (toolName) => {
     TimeOutWrapper(
         () => {  
-            PotentialIssueAlert("OpenFeature:")
+            PotentialIssueAlert("OpenDrawingTool:")
             return (clickCount % 2 == 0) 
-                || !IsLoad(CONFIG.CONTAINER, 0, true, doc);
+                || !IsLoad(CONFIG.CONTAINER, 0, true, secondaryDocument);
         },
         () => {
-            if(clickCount % 2 == 0) {
+            if(clickCount % 2 == 0) 
                 return;
-            }
-            let menuObject = Get(CONFIG.CONTAINER, 0, true, doc);
+
+            let menuObject = Get(CONFIG.CONTAINER, 0, true, secondaryDocument);
             // not load the item we want
-            //console.log(menuObject.getElementsByTagName("div"))
             if(menuObject.getElementsByTagName("div").length < 3){
-                let id = setTimeout(() => { 
-                    clearTimeout(id);
-                    return OpenFeature(doc, menu, feature);
-                }, 100);
+                return SleepAndRerun(() => OpenDrawingTool(secondaryDocument, menu, toolName))
             }
-            menuObject.getElementsByTagName("div")[feature].click();
+            menuObject.getElementsByTagName("div")[toolName].click();
             clickCount = 0;
         }
     )

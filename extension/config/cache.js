@@ -33,10 +33,21 @@ var cache = {
 cache.Load.PageLoad = () => {
     cache.Load._callbackOnPageLoad.forEach((cb) => cb());
 }
+
+let cooldown = false;
 cache.Main.Reload = () => {
-    cache.Main._cbOnMainReload.forEach((cb) => {
-        cb();
-    });
+    if(!cooldown){
+        cooldown = true;
+        cache.Main._cbOnMainReload.forEach((cb) => {
+            console.log(cb);
+            cb();
+        });
+
+        let id = setTimeout(() => { 
+            clearTimeout(id);
+            cooldown = false;
+        }, 500);
+    }
 }
 cache.Position.Change = async () => {
     cache.Position._callbackOnChange.forEach((cb) => cb());

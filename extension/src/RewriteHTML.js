@@ -17,9 +17,8 @@ let PotentialIssueAlert = (callerName, loopCount = 200) => {
  * @param {Int} time that this task will be sleep for 
  */
 let TimeOutWrapper = async (sleepCondition, cb, time=100) => {
-
-    
-    if(sleepCondition()){
+    if(sleepCondition(alertMessage = "<Function>", tolerance = 200)){
+        PotentialIssueAlert(alertMessage, tolerance)
         let id = setTimeout(() => { 
             clearTimeout(id);
             controlLoopCount++;
@@ -30,7 +29,17 @@ let TimeOutWrapper = async (sleepCondition, cb, time=100) => {
         cb();
     }
 }
-
+/**
+ * Like the Time out but this case, sleep once
+ * @param {*} cb 
+ * @param {*} time 
+ */
+let SleepAndRerun = async (cb, time = 100) => {
+    let id = setTimeout(() => { 
+        clearTimeout(id);
+        cb();
+    }, time);
+}
 /**
  * Wrapper <- to improve readability. Default object will be whole document.
  * @param {class name/ id} name 

@@ -1,7 +1,8 @@
 let SHIFT = "16";
 let TAB = "9";
 let F1 = "112";
-
+const ENTER = "13";
+const ESC = "27";
 let SHORTCUT = {
     ADD_TEXT : "q",
     BUTTON_CLICK: "a",

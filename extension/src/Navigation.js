@@ -19,7 +19,7 @@ let NavTo = (name, cb = () => {}) => {
                     }
                 }
                 if(!FoundWs)
-                    console.log(`No work space name "${name}" !!!`);
+                    alert(`No work space name "${name}" !!!`);
 
                 if(name == CONFIG.MainWS){
                     cache.workspace[name].addEventListener(

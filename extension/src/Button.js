@@ -106,10 +106,8 @@ class Button {
                             }
 
                             if(objectFound === false || objectFound === true){
-                                console.log("Trade not found")
+                                Alert("Trade not found")
                             }else{
-                                console.log( cache.Position.direction)
-                                console.log(objectFound);
                                 cache.Position.reset();
                                 /**
                                  * @todo: send these information toward proxy server to load into Notion database.
