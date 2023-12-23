@@ -74,6 +74,7 @@ let canvasListener = async () => {
                                 case SHORTCUT.OPEN_ALERT_MENU:
                                     doc.querySelector("div[class='button-dealticket__label']").click();
                                     OpenAlertMenu();
+
                                     break;
 
                                 case SHORTCUT.ADD_TEXT:
@@ -197,23 +198,9 @@ let OpenAlertMenu = () => {
                 },{alertMessage:"OpenAlertMenu: Focus", tolerance: 200, killswitch: false}
             );
 
-            form.addEventListener("click", () => {  form.getElementsByTagName("input")[3].focus() },true)
             form.addEventListener("keydown",
                 (event) => {
-                    if(event.keyCode == SHORTCUT.SUBMIT_FORM){
-                        let butSubmit = form.querySelector("div[class='ticket-footer']")
-                                            .querySelector("button");
-                
-                        if(butSubmit.classList.contains("disabled")){
-                            alert("OpenAlertMenu: button is disabled")
-                        }else{
-                            TimeOutWrapper(
-                                () => {return document.getElementsByTagName("app-ticket-confirmation-list").length < 1 },
-                                () => document.getElementsByTagName("app-ticket-confirmation-list")[0].querySelector("button").click(),
-                                {alertMessage:"OpenAlertMenu: Close confirmation", tolerance: 200, killswitch: true}
-                            )
-                        }butSubmit.click();     
-                    }
+                    
                     if(SHORTCUT.TOGGLE_DIRECTION(event)){
                         let container = form.querySelector("div[class='market-prices__direction']");
                         
@@ -226,10 +213,9 @@ let OpenAlertMenu = () => {
                             }
                         }
                     } 
-                    if(event.keyCode == SHORTCUT.CLOSE_FORM){
-                        form.querySelector("div[class='deal-ticket-header__destroy']").click();
-                    } 
+                     
                 }, true);
+                SubmitViaEnter_Exit(3);
         }
         ,{alertMessage:"OpenAlertMenu", tolerance: 200, killswitch: false})
 }
@@ -243,7 +229,7 @@ let HidePaperPLPositionForm = async () => {
         () => {
             let form = document.getElementsByTagName("app-deal-ticket")[0];
             let value = (form.querySelectorAll("span[_ngcontent-ng-c3494671082]"))[5]
-            console.log(value)
+            
             if(value) value.style.opacity = "0";
             // target, stoplost numerical number
             let textInput = form.querySelectorAll("input[type='text']");
@@ -251,37 +237,26 @@ let HidePaperPLPositionForm = async () => {
             textInput[8].style.opacity = "0";
         },
         {alertMessage: "HidePaperPL", tolerance: 100, killswitch: true}
-
     )
 }
 /**
  * handle enter via an enter and close via a click > only viable if we use shortcut
  */
-let SubmitViaEnter_Exit = async (clear = true) => {
+let SubmitViaEnter_Exit = async (entryInputIndex = 6) => {
     TimeOutWrapper(
+        () => { return document.getElementsByTagName("app-deal-ticket").length < 1},
         () => {
-            // check if the header tab loaded and reader to be scrap
-            PotentialIssueAlert("Enter_exit shortcut")
-            return document.getElementsByTagName("app-deal-ticket").length < 1
-        },
-        
-        () => {
-            // Form will be the 3rd work space
             let form = document.getElementsByTagName("app-deal-ticket")[0]
- 
-            form.querySelectorAll("input")[6].focus();
-            form.addEventListener("click", () => {
-                form.querySelectorAll("input")[6].focus();
-            },true)
+            form.querySelectorAll("input")[entryInputIndex].focus();
+
+            form.addEventListener("click", () => { form.querySelectorAll("input")[entryInputIndex].focus() },true)
             form.addEventListener("keydown",
                 (event) => {
                     if(event.keyCode == SHORTCUT.SUBMIT_FORM){
-                        let butSubmit = form.querySelector("div[class='ticket-footer']");
-                        
-                        butSubmit = butSubmit.querySelector("button");
+                        let butSubmit = form.querySelector("div[class='ticket-footer']")
+                                            .querySelector("button");
                         if(butSubmit.classList.contains("disabled")){
                             alert("button is disabled")
-                            
                         }else{
                             TimeOutWrapper(
                                 () => {return document.getElementsByTagName("app-ticket-confirmation-list").length < 1 },
@@ -291,7 +266,6 @@ let SubmitViaEnter_Exit = async (clear = true) => {
                             )
                         }
                         butSubmit.click();
-                        
                     } 
                     if(event.keyCode == SHORTCUT.CLOSE_FORM){
                         form.querySelector("div[class='deal-ticket-header__destroy']")
@@ -304,30 +278,26 @@ let SubmitViaEnter_Exit = async (clear = true) => {
 
 }
 
-let openFromTargetMenu = async (name  ) =>{
-    try{      
-        let menu = Get("tv-floating-toolbar__widget", -1, true, secondaryDocument);
+/**
+ * Target menu are from the drawing object in the canvas, by click it we will see a menu pop up
+ * @param {String: use devTool from platform to see tha viable name} name 
+ */
+let openFromTargetMenu = async (name) =>{
+    let menu = Get("tv-floating-toolbar__widget", -1, true, secondaryDocument);
 
-        if(menu.length == 0)
-            return;
-
-        let found = false;
+    if(menu.length > 0){
         for(let i = 0; i < menu.length; i++){
             let button = menu[i].getElementsByTagName("div")[0]
             if(button.getAttribute('data-name') == name){
-                found = true;
+
                 // make sure no Propagation else lead to double click (left same state)
-                button.addEventListener("click", (event) => {
-                    event.preventDefault();
-                }, true)
-                
+                button.addEventListener("click", (event) => {  event.preventDefault() }, true)
                 button.click();
                 break;
             }
-        }      
-    }catch (e) {
-        alert(e)
-    }
+        }
+    }      
+
 }
 
 /**
@@ -348,22 +318,20 @@ let OpenDrawingToolMenu = async (menuIndex, toolName) => {
  */
 let OpenDrawingTool = async (toolName) => {
     TimeOutWrapper(
-        () => {  
-            PotentialIssueAlert("OpenDrawingTool:")
-            return (clickCount % 2 == 0) 
-                || !IsLoad(CONFIG.CONTAINER, 0, true, secondaryDocument);
-        },
+        () => {return (clickCount % 2 == 0) 
+                || !IsLoad(CONFIG.CONTAINER, 0, true, secondaryDocument)},
         () => {
-            if(clickCount % 2 == 0) 
-                return;
-
-            let menuObject = Get(CONFIG.CONTAINER, 0, true, secondaryDocument);
-            // not load the item we want
-            if(menuObject.getElementsByTagName("div").length < 3){
-                return SleepAndRerun(() => OpenDrawingTool(secondaryDocument, menu, toolName))
+            if(clickCount % 2 != 0){ // odd count
+                
+                let menuObject = Get(CONFIG.CONTAINER, 0, true, secondaryDocument);
+                // not load the item we want
+                if(menuObject.getElementsByTagName("div").length < 3){
+                    return SleepAndRerun(() => OpenDrawingTool(secondaryDocument, menu, toolName))
+                }
+                menuObject.getElementsByTagName("div")[toolName].click();
+                clickCount = 0;
             }
-            menuObject.getElementsByTagName("div")[toolName].click();
-            clickCount = 0;
-        }
+        },{alertMessage:"OpenDrawingTool", tolerance: 200, killswitch: false}
     )
+    
 }
