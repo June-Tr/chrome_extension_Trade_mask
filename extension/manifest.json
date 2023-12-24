@@ -28,7 +28,7 @@
                          "src/Button.js", "src/KeyEvent.js",
 
 
-                "html/popup.js",
+                "html/popup.js", "html/snipVisualisation.js",
                 
                 "index.js"
             ],

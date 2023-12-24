@@ -15,8 +15,8 @@ let guideTxt = [
 ]
 let popupStatic = true;
 
-let showShortCut = (e, doc) => {
-    let handler = Get("shortcut",0, false, doc);
+let showShortCut = (e) => {
+    let handler = Get("shortcut",0, false, secondaryDocument);
 
     if(popupStatic) return;
 
@@ -65,9 +65,10 @@ let createPopup = (doc) => {
         popup.style["z-index"] = "auto";
         popup.style.display = "none";
     }
-    
+    popup.style.width = "auto";
+    popup.style.height = "auto";
     page.appendChild(popup);
-    
+    doc.addEventListener("mousemove", (e) => { showShortCut(e, doc)}, true);
 }
 
 /**

@@ -60,10 +60,15 @@ let canvasListener = async () => {
                         if(!stopper && SHORTCUT.TOGGLE_GUIDE(event)){
                             popupStatic = !popupStatic;
                             showGuide = !showGuide;
-                            if(showGuide) 
-                                secondaryDocument.addEventListener("mousemove", (e) => { showShortCut(e, secondaryDocument)}, true);
-                            else
-                                secondaryDocument.removeEventListener("mousemove", (e) => { showShortCut(e, secondaryDocument)});
+                            if(showGuide){
+                                secondaryDocument.addEventListener(
+                                    "mousemoe", showShortCut, true
+                                )
+                            }else{
+                                secondaryDocument.removeEventListener(
+                                    "mousemoe", showShortCut, true
+                                ) 
+                            }
                             stopper = true;
                             SleepAndRerun(() => {stopper = false;});
                         }
@@ -71,12 +76,13 @@ let canvasListener = async () => {
                             openFromTargetMenu("lock")
                         }
                         if(event.altKey){
-                            if(showGuide)
+                            if(showGuide){
+                                console.log("show")
                                 Get("shortcut",0, false, doc).style.display = "flex";
-                            
+                            }
                             switch(event.key){
                                 case "F2":
-                                    SnipCanvas();
+                                    if(!block ) SnipCanvas();
                                     break;
 
                                 case SHORTCUT.OPEN_ALERT_MENU:
@@ -490,14 +496,10 @@ let OpenDrawingTool = async (toolName) => {
 let remain = 0 
 let coors = [];
 let img = null;
-
+let block = false;
 let find_coor = (event) => {    
-            
+        
         if(event.target.tagName == "CANVAS" ){
-            // if(remain == 2){
-            //     let ifrm = document.getElementsByTagName("tpdwt-tvp-chart")[0].children[0].children[0];
-            //     secondaryDocument = ifrm.contentDocument? ifrm.contentDocument: ifrm.contentWindow.document;
-            // }
             
             let mainCanvasWidth = secondaryDocument.querySelector("canvas").offsetWidth
             let mainCanvasHeight = secondaryDocument.querySelector("canvas").offsetHeight
@@ -511,11 +513,14 @@ let find_coor = (event) => {
             })
             remain--;
             if(remain == 0 || coors.length == 2){
-                console.log(coors)
+                //destroyVisualiser(secondaryDocument);
                 secondaryDocument.removeEventListener("click", find_coor, true);
-                SaveImage(coors, mainCanvasHeight)
+                SaveImage(coors, mainCanvasHeight);
                 coors = [];
                 remain = 0;
+                block = true;
+            }else{
+                createVisualiser(secondaryDocument, coors[0])
             }
         }
     }
@@ -525,6 +530,9 @@ let NewScreenshotHandler = (event) => {
     if(event.keyCode == SHORTCUT.SUBMIT_FORM){
         alert("sent")
         console.log(dataURLtoFile(img.src, "log.png"))
+        /**
+         * @todo: write the send method that hangling sending the img
+         */
         finishFlag= true;
     }
     if(event.keyCode == SHORTCUT.CLOSE_FORM){
@@ -532,6 +540,7 @@ let NewScreenshotHandler = (event) => {
         finishFlag = true;
     }
     if(finishFlag){
+        block = false;
         if(img!=null) document.querySelector("app-workspace-panel").removeChild(img)
         img = null;
         document.removeEventListener("keydown", NewScreenshotHandler, true)
@@ -544,7 +553,6 @@ let SaveImage = (coors, maxHeight) => {
     let context = newCanvas.getContext('2d');
     newCanvas.width = Math.abs(coors[1].x - coors[0].x);
     newCanvas.height = Math.abs(coors[1].y - coors[0].y);
-    console.log(`W:${newCanvas.width} H:${newCanvas.width}`)
     context.drawImage(canvas, Math.min(coors[0].x,coors[1].x ), Math.min(coors[0].y,coors[1].y ), newCanvas.width, newCanvas.height, 0, 0,  newCanvas.width, newCanvas.height)
     //console.log(newCanvas.toDataURL('png'))
     img = document.createElement("img");
