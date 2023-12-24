@@ -49,6 +49,7 @@ let canvasListener = async () => {
                 createPopup(doc)
                 doc.addEventListener("keydown", 
                     (event) => {
+                        
                         if(event.code  == "Space"){
                             if(event.ctrlKey){
                                 spaceBarToggle = !spaceBarToggle;
@@ -72,8 +73,12 @@ let canvasListener = async () => {
                         if(event.altKey){
                             if(showGuide)
                                 Get("shortcut",0, false, doc).style.display = "flex";
-
+                            
                             switch(event.key){
+                                case "F2":
+                                    SnipCanvas();
+                                    break;
+
                                 case SHORTCUT.OPEN_ALERT_MENU:
                                     doc.querySelector("div[class='button-dealticket__label']").click();
                                     OpenAlertMenu();
@@ -179,6 +184,7 @@ let adjustSize = async () => {
             return document.getElementsByTagName("app-deal-ticket").length < 1},
         () => {
             let form = document.getElementsByTagName("app-deal-ticket")[0]
+            form.querySelector("input[type='checkbox']").click();
             let input = form.querySelector("input[placeholder='pips']")
             input.addEventListener("change", (event)=> {
                 if(input.value < ACCOUNT.minimumSL){
@@ -193,11 +199,16 @@ let adjustSize = async () => {
                     cancelable: true
                   }))
             }   , true)
+            input.focus();
+            let focusE = () => input.focus();
+            form.addEventListener("click", focusE, true)
             form.addEventListener("keydown",
                 (event) => {
+                    input.focus();
                     if(event.keyCode == SHORTCUT.CLOSE_FORM){
                         form.querySelector("div[class='deal-ticket-header__destroy']")
                             .click();
+                        form.removeEventListener("click", focusE, true)
                     } 
                 },
                 true
@@ -475,3 +486,95 @@ let OpenDrawingTool = async (toolName) => {
         },{alertMessage:"OpenDrawingTool", tolerance: 200, killswitch: false}
     )
 }
+
+let remain = 0 
+let coors = [];
+let img = null;
+
+let find_coor = (event) => {    
+            
+        if(event.target.tagName == "CANVAS" ){
+            // if(remain == 2){
+            //     let ifrm = document.getElementsByTagName("tpdwt-tvp-chart")[0].children[0].children[0];
+            //     secondaryDocument = ifrm.contentDocument? ifrm.contentDocument: ifrm.contentWindow.document;
+            // }
+            
+            let mainCanvasWidth = secondaryDocument.querySelector("canvas").offsetWidth
+            let mainCanvasHeight = secondaryDocument.querySelector("canvas").offsetHeight
+            let toolBarWidth = secondaryDocument.querySelector(".inner-1xuW-gY4").offsetWidth;
+            let tempWidth = mainCanvasWidth + toolBarWidth
+            coors.push({
+                x: (event.clientX < tempWidth)
+                    ? (event.clientX > toolBarWidth) ? event.clientX - toolBarWidth : 0
+                    : mainCanvasWidth,
+                y:(event.clientY < mainCanvasHeight) ? event.clientY : mainCanvasHeight
+            })
+            remain--;
+            if(remain == 0 || coors.length == 2){
+                console.log(coors)
+                secondaryDocument.removeEventListener("click", find_coor, true);
+                SaveImage(coors, mainCanvasHeight)
+                coors = [];
+                remain = 0;
+            }
+        }
+    }
+
+let NewScreenshotHandler = (event) => {
+    let finishFlag = false;
+    if(event.keyCode == SHORTCUT.SUBMIT_FORM){
+        alert("sent")
+        console.log(dataURLtoFile(img.src, "log.png"))
+        finishFlag= true;
+    }
+    if(event.keyCode == SHORTCUT.CLOSE_FORM){
+        alert("abort")
+        finishFlag = true;
+    }
+    if(finishFlag){
+        if(img!=null) document.querySelector("app-workspace-panel").removeChild(img)
+        img = null;
+        document.removeEventListener("keydown", NewScreenshotHandler, true)
+    }
+}
+let SaveImage = (coors, maxHeight) => {
+    
+    let canvas = secondaryDocument.querySelector("canvas")
+    let newCanvas = document.createElement("canvas");
+    let context = newCanvas.getContext('2d');
+    newCanvas.width = Math.abs(coors[1].x - coors[0].x);
+    newCanvas.height = Math.abs(coors[1].y - coors[0].y);
+    console.log(`W:${newCanvas.width} H:${newCanvas.width}`)
+    context.drawImage(canvas, Math.min(coors[0].x,coors[1].x ), Math.min(coors[0].y,coors[1].y ), newCanvas.width, newCanvas.height, 0, 0,  newCanvas.width, newCanvas.height)
+    //console.log(newCanvas.toDataURL('png'))
+    img = document.createElement("img");
+    img.src = newCanvas.toDataURL('png')
+    img.style["max-height"] = `${maxHeight *1.0 /2.0}px`;
+    img.style["object-fit"] = "contain";
+    
+    document.querySelector("app-workspace-panel").prepend(img);
+    document.addEventListener("keydown", NewScreenshotHandler, true)
+}
+
+let SnipCanvas = () => {
+    remain = 2;
+    secondaryDocument.addEventListener("click",  find_coor, true)
+}
+
+/**
+ * Code gotten from StackOverFlow (https://medium.com/@impulsejs/convert-dataurl-to-a-file-in-javascript-1921b8c3f4b)
+ * @param {*} dataurl 
+ * @param {*} filename 
+ * @returns 
+ */
+function dataURLtoFile(dataurl, filename) {
+    var arr = dataurl.split(","),
+      mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[arr.length - 1]),
+      n = bstr.length,
+      u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  }
