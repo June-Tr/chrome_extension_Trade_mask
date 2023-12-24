@@ -44,7 +44,7 @@ let canvasListener = async () => {
             secondaryDocument = doc;
             // ensure doc is written during second load  
             if(!Get("group-2JyOhh7Z", 0, true, secondaryDocument)){
-                SleepAndRerun(canvasListener, 1000);
+                SleepAndRerun(canvasListener, 500);
             }else {
                 createPopup(doc)
                 doc.addEventListener("keydown", 
@@ -59,6 +59,10 @@ let canvasListener = async () => {
                         if(!stopper && SHORTCUT.TOGGLE_GUIDE(event)){
                             popupStatic = !popupStatic;
                             showGuide = !showGuide;
+                            if(showGuide) 
+                                secondaryDocument.addEventListener("mousemove", (e) => { showShortCut(e, secondaryDocument)}, true);
+                            else
+                                secondaryDocument.removeEventListener("mousemove", (e) => { showShortCut(e, secondaryDocument)});
                             stopper = true;
                             SleepAndRerun(() => {stopper = false;});
                         }
@@ -132,13 +136,12 @@ let canvasListener = async () => {
                         if(showGuide && event.keyCode == 18){   
                             event.preventDefault();
                             Get("shortcut",0, false, doc).style.display = "none";
-                        }
+                       }
                     },
                     true
                 )
                 doc.addEventListener("contextmenu", rightClickHandler, true)
 
-                
             },{alertMessage:"canvasListener", tolerance: 200, killswitch: false}
     )
 }

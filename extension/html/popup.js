@@ -67,7 +67,7 @@ let createPopup = (doc) => {
     }
     
     page.appendChild(popup);
-    doc.addEventListener("mousemove", (e) => { showShortCut(e, doc)}, true);
+    
 }
 
 /**
