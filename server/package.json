@@ -1,0 +1,16 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "A server that connect the extension (front end) to a SQL server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "June",
+  "license": "MIT",
+  "devDependencies": {
+    "@notionhq/client": "^2.2.14",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  }
+}

@@ -2,6 +2,9 @@
     "manifest_version": 3,
     "name": "Assistance",
     "version": "1.0.0", 
+    "host_permissions": [
+        "http://localhost:5000/"
+      ],
     "permissions": [
         "tabs",
         "scripting"
@@ -15,6 +18,10 @@
     "action": {
         "default_popup": "guide.html"
     },
+    "permissions": [
+        "tabs",
+        "scripting"
+    ],
     "content_scripts": [
         {
             "matches": ["https://trade.loginandtrade.com/webtrader/*"],
@@ -30,7 +37,9 @@
 
                 "html/popup.js", "html/snipVisualisation.js",
                 
-                "index.js"
+                "index.js",
+
+                "Connection/notion.js"
             ],
             "css": ["css/main.css"]
         }

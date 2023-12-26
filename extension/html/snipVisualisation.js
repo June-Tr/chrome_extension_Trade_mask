@@ -16,7 +16,7 @@ let visualiserUpdate = (event) => {
 let _selfClose = (event) => {
     if(event)
     event.preventDefault();
-    destroyVisualiser(event)
+    destroyVisualiser()
     
 }
 let createVisualiser = (docu, coord) => {
@@ -40,7 +40,7 @@ let createVisualiser = (docu, coord) => {
     }   
 }
 
-let destroyVisualiser = (event) => {
+let destroyVisualiser = () => {
     handle.remove();
     doc.removeEventListener("mousemove",visualiserUpdate, true);
     doc.removeEventListener("click", _selfClose, true);

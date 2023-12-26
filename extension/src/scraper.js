@@ -109,3 +109,7 @@ let ExtractPrice = async (cb, arg) => {
         },{alertMessage:"ExtractPrice", tolerance: 100, killswitch: true}
     )
 }
+
+let ExtractPassPosition = async () => {
+    
+}

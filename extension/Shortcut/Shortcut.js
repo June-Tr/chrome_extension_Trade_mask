@@ -50,6 +50,12 @@ let canvasListener = async () => {
                 doc.addEventListener("keydown", 
                     (event) => {
                         
+                        if(blockBySnipper && event.keyCode == SHORTCUT.CLOSE_FORM){
+                            endSnip();
+                        }
+                        if(blockBySnipper){ 
+                            return;
+                        }
                         if(event.code  == "Space"){
                             if(event.ctrlKey){
                                 spaceBarToggle = !spaceBarToggle;
@@ -73,6 +79,7 @@ let canvasListener = async () => {
                             SleepAndRerun(() => {stopper = false;});
                         }
                         if(lockTogglerEnable && SHORTCUT.LOCK_TARGET(event)){
+                            SendTrade(tradeData);
                             openFromTargetMenu("lock")
                         }
                         if(event.altKey){
@@ -82,7 +89,7 @@ let canvasListener = async () => {
                             }
                             switch(event.key){
                                 case "F2":
-                                    if(!block ) SnipCanvas();
+                                    SnipCanvas();
                                     break;
 
                                 case SHORTCUT.OPEN_ALERT_MENU:
@@ -198,7 +205,8 @@ let adjustSize = async () => {
                 }
                 let quantity = form.querySelector("app-number-input[formcontrolname='quantity']")
                                     .querySelector("input");
-                quantity.value = (ACCOUNT.RiskFactor *1.0 - 0.5) / (input.value * 0.0001);
+                quantity.value = parseInt((ACCOUNT.RiskFactor *1.0 - 0.5) / (input.value * 0.0001));
+                console.log((ACCOUNT.RiskFactor *1.0 - 0.5) / (input.value * 0.0001))
                 quantity.dispatchEvent(new Event("input", {
                     view: window,
                     bubbles: true,
@@ -297,7 +305,8 @@ let OpenAlertMenu = () => {
                         () => { return !form.querySelector("span")?.children[2].classList.contains("selected")},
                         () => {form.getElementsByTagName("input")[3].focus()}
                     )
-                },{alertMessage:"OpenAlertMenu: Focus", tolerance: 200, killswitch: false}
+                },{alertMessage:"OpenAlertMenu: Focus", tolerance: 200, killswitch: false},
+                30
             );
 
             form.addEventListener("keydown",
@@ -319,7 +328,8 @@ let OpenAlertMenu = () => {
                 }, true);
                 SubmitViaEnter_Exit(3);
         }
-        ,{alertMessage:"OpenAlertMenu", tolerance: 200, killswitch: false})
+        ,{alertMessage:"OpenAlertMenu", tolerance: 200, killswitch: false},
+        10)
 }
 
 /**
@@ -496,14 +506,15 @@ let OpenDrawingTool = async (toolName) => {
 let remain = 0 
 let coors = [];
 let img = null;
-let block = false;
+let blockBySnipper = false;
+let toolBarWidth = 0;                         
 let find_coor = (event) => {    
         
         if(event.target.tagName == "CANVAS" ){
             
             let mainCanvasWidth = secondaryDocument.querySelector("canvas").offsetWidth
             let mainCanvasHeight = secondaryDocument.querySelector("canvas").offsetHeight
-            let toolBarWidth = secondaryDocument.querySelector(".inner-1xuW-gY4").offsetWidth;
+            toolBarWidth = secondaryDocument.querySelector(".inner-1xuW-gY4").offsetWidth;
             let tempWidth = mainCanvasWidth + toolBarWidth
             coors.push({
                 x: (event.clientX < tempWidth)
@@ -518,12 +529,21 @@ let find_coor = (event) => {
                 SaveImage(coors, mainCanvasHeight);
                 coors = [];
                 remain = 0;
-                block = true;
             }else{
                 createVisualiser(secondaryDocument, coors[0])
             }
         }
     }
+
+let endSnip = () => {
+    remain = 0;
+    destroyVisualiser()
+    secondaryDocument.removeEventListener("click", find_coor, true);
+    secondaryDocument.removeEventListener("contextmenu", rightClickHandler, true)
+    coors = [];
+    remain = 0;
+    blockBySnipper = false;
+}
 
 let NewScreenshotHandler = (event) => {
     let finishFlag = false;
@@ -540,14 +560,13 @@ let NewScreenshotHandler = (event) => {
         finishFlag = true;
     }
     if(finishFlag){
-        block = false;
+        blockBySnipper = false;
         if(img!=null) document.querySelector("app-workspace-panel").removeChild(img)
         img = null;
         document.removeEventListener("keydown", NewScreenshotHandler, true)
     }
 }
 let SaveImage = (coors, maxHeight) => {
-    
     let canvas = secondaryDocument.querySelector("canvas")
     let newCanvas = document.createElement("canvas");
     let context = newCanvas.getContext('2d');
@@ -566,7 +585,9 @@ let SaveImage = (coors, maxHeight) => {
 
 let SnipCanvas = () => {
     remain = 2;
+    blockBySnipper = true;
     secondaryDocument.addEventListener("click",  find_coor, true)
+    secondaryDocument.addEventListener("contextmenu", endSnip, true)
 }
 
 /**

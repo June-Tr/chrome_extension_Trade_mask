@@ -1,0 +1,32 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+
+# Optional npm cache directory
+.npm
+
+# npm
+server/node_modules
+server/package-lock.json
+node_modules
+package-lock.json
+*.log
+*.gz
+
+
+# Benchmarking
+benchmarks/graphs
+
+.env
