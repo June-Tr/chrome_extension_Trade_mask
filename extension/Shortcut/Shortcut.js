@@ -79,7 +79,7 @@ let canvasListener = async () => {
                             SleepAndRerun(() => {stopper = false;});
                         }
                         if(lockTogglerEnable && SHORTCUT.LOCK_TARGET(event)){
-                            SendTrade(tradeData);
+                            
                             openFromTargetMenu("lock")
                         }
                         if(event.altKey){
@@ -91,7 +91,11 @@ let canvasListener = async () => {
                                 case "F2":
                                     SnipCanvas();
                                     break;
-
+                                case "F9":
+                                    ExtractPastPosition(
+                                        {year:2023, month:12, day:23}
+                                    );
+                                        break;
                                 case SHORTCUT.OPEN_ALERT_MENU:
                                     doc.querySelector("div[class='button-dealticket__label']").click();
                                     OpenAlertMenu();
@@ -187,6 +191,8 @@ let rightClickHandler = async () => {
         , {alertMessage: false, tolerance: 30, killswitch: true}, 10
     )
 }
+
+
 /**
  * Automatically adjust the risk according to the defined risk amount.
  * Intented left the place order to user(so misclick is not occur)
@@ -196,37 +202,39 @@ let adjustSize = async () => {
         () => {  
             return document.getElementsByTagName("app-deal-ticket").length < 1},
         () => {
+            
             let form = document.getElementsByTagName("app-deal-ticket")[0]
+            let quantity = form.querySelector("app-number-input[formcontrolname='quantity']")
+                                    .querySelector("input");
             form.querySelector("input[type='checkbox']").click();
             let input = form.querySelector("input[placeholder='pips']")
             input.addEventListener("change", (event)=> {
                 if(input.value < ACCOUNT.minimumSL){
                     alert("Stoplost is below the minimum amount!!!!");
                 }
-                let quantity = form.querySelector("app-number-input[formcontrolname='quantity']")
-                                    .querySelector("input");
                 quantity.value = parseInt((ACCOUNT.RiskFactor *1.0 - 0.5) / (input.value * 0.0001));
-                console.log((ACCOUNT.RiskFactor *1.0 - 0.5) / (input.value * 0.0001))
+
                 quantity.dispatchEvent(new Event("input", {
                     view: window,
-                    bubbles: true,
+                    bubbles: true,  
                     cancelable: true
                   }))
             }   , true)
             input.focus();
-            let focusE = () => input.focus();
+
+            let focusE = () => { if(document.activeElement != quantity);input.focus()};
             form.addEventListener("click", focusE, true)
             form.addEventListener("keydown",
                 (event) => {
-                    input.focus();
                     if(event.keyCode == SHORTCUT.CLOSE_FORM){
                         form.querySelector("div[class='deal-ticket-header__destroy']")
                             .click();
-                        form.removeEventListener("click", focusE, true)
                     } 
                 },
                 true
             )
+            form.querySelector(".button--submit").addEventListener("click", () => {adjustFlag=false, console.log("click")});
+            form.querySelector("div[class='deal-ticket-header__destroy']").addEventListener("click", () => {adjustFlag=false, console.log("click")});
         }
         ,{alertMessage:"adjustSize", tolerance: 200, killswitch: false}),
         50
@@ -256,7 +264,7 @@ let openOrderAdjustment = async () => {
                     },{alertMessage:"OrderAdjustment:: Amend click", tolerance: 200, killswitch: false}
                 )
             }           
-        },{alertMessage:"openOrderAdjustment", tolerance: 200, killswitch: false})
+        },{alertMessage:"openOrderAdjustment", tolerance: 200, killswitch: true})
 }
 
 let inAdjustment = true;
@@ -283,7 +291,40 @@ let ToggleCloseAdjust = async () => {
                     
                 }, true);
         }
-        ,{alertMessage:"ToggleCloseAdjust", tolerance: 200, killswitch: false})
+        ,{alertMessage:"ToggleCloseAdjust", tolerance: 200, killswitch: true})
+}
+
+let getCurrentPointerPrice = async () => {
+    return;
+    // secondaryDocument.dispatchEvent(
+    //     new MouseEvent('contextmenu',{bubbles:true})
+    // );
+    //     TimeOutWrapper(
+    //         () => {
+    //             return secondaryDocument.querySelector("span[class='context-menu-wrapper']") == null},
+    //         () => {
+    //             let menu = secondaryDocument.querySelector("span[class='context-menu-wrapper']")
+    //             if(menu.querySelectorAll("span").length == 0) SleepAndRerun(rightClickHandler, 300);
+    
+    //             let tradeButton = (secondaryDocument.querySelectorAll("span[class='label-1If3beUH']")[2])
+    
+    //             if("Create Limit Order..." == (tradeButton.innerText)){
+    //                 console.log("place order")
+    //             }else{
+    //                 console.log("trade")
+    //                 tradeButton.focus();
+    //                 TimeOutWrapper(
+    //                     () => {return menu.querySelector("tr[data-action-name='trade-sell-limit']") != null},
+    //                     () => {
+    //                         console.log(menu.querySelector("tr[data-action-name='trade-sell-limit']"))
+    //                     }
+    //                 )
+    //             }
+    //         }
+    //         , {alertMessage: false, tolerance: 30, killswitch: true}, 10
+    //     )
+    // ;
+    
 }
 /**
  * (1) Navigate to the alert menu.
@@ -291,6 +332,7 @@ let ToggleCloseAdjust = async () => {
  * (3) Add Submittion on Enter, Close on ESC button press
  */
 let OpenAlertMenu = () => {
+    //getCurrentPointerPrice();
     TimeOutWrapper(
         () => {return document.getElementsByTagName("app-deal-ticket").length < 1 }, 
         () => {
@@ -305,7 +347,7 @@ let OpenAlertMenu = () => {
                         () => { return !form.querySelector("span")?.children[2].classList.contains("selected")},
                         () => {form.getElementsByTagName("input")[3].focus()}
                     )
-                },{alertMessage:"OpenAlertMenu: Focus", tolerance: 200, killswitch: false},
+                },{alertMessage:"OpenAlertMenu: Focus", tolerance: 50, killswitch: true},
                 30
             );
 
@@ -544,16 +586,35 @@ let endSnip = () => {
     remain = 0;
     blockBySnipper = false;
 }
-
+/**
+ * Credit: Function found on external 
+ * source (https://sentry.io/answers/how-do-i-copy-to-the-clipboard-in-javascript/#:~:text=Copying%20an%20Image%20to%20the%20Clipboard&text=To%20write%20an%20image%20to,()%20method%20on%20the%20response.)
+ * @param {*} imgUrl 
+ */
+async function copyImgToClipboard(imgUrl) {
+    try {
+      const data = await fetch(imgUrl);
+      const blob = await data.blob();
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          [blob.type]: blob,
+        }),
+      ]);
+      console.log('Image copied.');
+    } catch (err) {
+      console.error(err.name, err.message);
+    }
+  }
 let NewScreenshotHandler = (event) => {
     let finishFlag = false;
     if(event.keyCode == SHORTCUT.SUBMIT_FORM){
-        alert("sent")
-        console.log(dataURLtoFile(img.src, "log.png"))
+        
+        
         /**
          * @todo: write the send method that hangling sending the img
          */
         finishFlag= true;
+        copyImgToClipboard(img.src);
     }
     if(event.keyCode == SHORTCUT.CLOSE_FORM){
         alert("abort")

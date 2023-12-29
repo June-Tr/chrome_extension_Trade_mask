@@ -95,8 +95,8 @@ let ExtractPrice = async (cb, arg) => {
                 
                 for(let i =0; i < length; i++){
                     order = container.children[i].innerText.split("\n");
-                    
                     found.push({
+                            size: order[2],
                             date: order[0],
                             price: order[3],
                             direction: order[1],
@@ -110,6 +110,57 @@ let ExtractPrice = async (cb, arg) => {
     )
 }
 
-let ExtractPassPosition = async () => {
-    
+let extractDate = (date) => {
+    let result = {};
+    let dateStr = date;
+    dateStr = dateStr.split(" ");
+    dateStr.forEach(
+        subStr => {
+            if(subStr.includes("/")){
+                let b = subStr.split("/");
+                result.y = b[2];
+                result.m = b[1];
+                result.d = b[0]
+            }else{
+                let b = subStr.split(":");
+                result.h = b[0];
+                result.m = b[1];
+                result.s = b[2];
+            }
+        }
+    )
+    console.log(result)
+    return result;
+}
+let ExtractPastPosition = async (onDate) => {
+    NavTo(
+        "History",
+        () => {
+            ExtractPrice((found, arg) => {
+                const {year, month, day} = onDate;
+                console.log(found[0])
+                let dateStr = found[0].date;
+                dateStr = dateStr.split(" ")[0];
+                dateStr = dateStr.split("/")
+                let orders = [];
+                console.log(new Date(found[0].date));
+                found.forEach(o => {
+                    if(o.date.includes(`${day}/${month}/${year}`)){
+                        let d = extractDate(o.date);
+                        let date = new Date(
+                            d.y, d.m, d.d, d.h, d.m, d.s
+                        ).toISOString();
+                        console.log(date)
+                        let replica = {...o, date: {start:date}, type: o.direction, market: "Eur_usd", label:"_", curency:"Usd"}
+                        orders.push(replica);
+                    }
+                });
+                SendManyOrder({
+                    date: onDate,
+                    orders: orders
+                })
+                NavTo(CONFIG.MainWS);
+            })
+        }
+    )
 }

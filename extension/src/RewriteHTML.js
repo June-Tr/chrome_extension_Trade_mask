@@ -79,8 +79,7 @@ let ModifyHeader = async() => {
             cache.header.balance.innerHTML = CONFIG.Replacement.BALANCE;
       
             cache.header.main.innerHTML 
-                += CONFIG.Addition.Header.RiskFactorTitle
-                    + CONFIG.Addition.Header.RiskFactor
+                +=  CONFIG.Addition.Header.RiskFactor
                     + CONFIG.Addition.Header.LongPosLog
                     + CONFIG.Addition.Header.ShortPosLog;
             

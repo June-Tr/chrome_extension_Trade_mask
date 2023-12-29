@@ -85,6 +85,7 @@ class Button {
                             */
                             let update = (i) => { return i + 1;}
                             let objectFound = false
+                            let entry = null;
                             while(i< found.length && i > -1){
                                 
                                 if(i > 100 || i < -100){
@@ -96,10 +97,30 @@ class Button {
                                     // start looking for
                                     update = (i) => {return i - 1}
                                     objectFound = true;
+                                    let d= extractDate(found[i].date);
+                                    entry = {
+                                        ...found[i],
+                                        date: {
+                                            start: new Date(
+                                                    d.y, d.m, d.d, d.h, d.m, d.s
+                                                ).toISOString()
+                                        },
+                                         type: found[i].direction, market: "Eur_usd", label:"Open", curency:"Usd"
+                                    }
                                 }
                                 
                                 if(objectFound && found[i]?.direction != cache.Position.direction){
-                                    objectFound = {...found[i]};
+                                    
+                                    let d= extractDate(found[i].date);
+                                    objectFound = {
+                                        ...found[i],
+                                        date: {
+                                            start: new Date(
+                                                    d.y, d.m, d.d, d.h, d.m, d.s
+                                                ).toISOString()
+                                        },
+                                         type: found[i].direction, market: "Eur_usd", label:"Full close", curency:"Usd"
+                                    }
                                     break;
                                 }
                                 i = update(i);
@@ -112,6 +133,18 @@ class Button {
                                 /**
                                  * @todo: send these information toward proxy server to load into Notion database.
                                  */
+                                cache.Position.mostRecent ={
+                                    entry: entry.id,
+                                    exit: objectFound.id
+                                }
+                                SendOrder(entry); 
+                                SendOrder(objectFound);
+                                SendTrade({
+                                    entry: cache.Position.mostRecent.entry,
+                                    exit: cache.Position.mostRecent.exit,
+                                    pattern: "Long",
+                                    description: "_____Require filling in"
+                                })
                             }
                             NavTo(CONFIG.MainWS);
                         },

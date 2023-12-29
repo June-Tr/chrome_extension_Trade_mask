@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const {SendOrder, SendTrade} = require( './notion.js');
+const {SendOrder, SendTrade, updateIntraDayOrder,SendOrderWrapper} = require( './notion.js');
 require('dotenv').config()
 
 const https = require("https")
@@ -26,14 +26,25 @@ app.post('/Order', (req, res) => {
     const order = req.body;
     res.body = JSON.stringify({value: "return message"})
     res.send()
-    SendOrder(order);
+    SendOrderWrapper(order);
 })
 
 app.post('/Trade', (req, res) => {
     console.log("Trade")
     const trade = req.body;
     res.body = JSON.stringify({value: "return message"})
-    res.send()
-    console.log(trade)
+    
+    //console.log(trade)
+    
     SendTrade(trade);
+})
+
+
+app.post("/Many/Intraday/_Order", (req, res) => {
+    console.log("Update Intraday Order");
+    console.log(req.body);
+    updateIntraDayOrder(
+        req.body.date,
+        req.body.orders
+    )
 })

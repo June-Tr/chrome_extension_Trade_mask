@@ -29,6 +29,7 @@ var cache = {
         direction: "",
         price: "",
         entry: "",
+        mostRecent: {entry:null, exit:null},
         // use the listener pattern
         _callbackOnChange:[],
         reset: () => {
@@ -58,8 +59,8 @@ cache.Position.Change = async () => {
 }
 cache.Position.test = () => {
     cache.Position.state = true;
-    cache.Position.direction = "Sell";
-    cache.Position.price = 1.09199;
-    cache.Position.entry = "907119370";
+    cache.Position.direction = "Buy";
+    cache.Position.price = 1.10315;
+    cache.Position.entry = "908030808";
     cache.Position.Change();
 }
