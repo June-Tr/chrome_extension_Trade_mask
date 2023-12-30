@@ -1,102 +1,53 @@
 class Button {
     constructor() {
         this.button = Get("_myButton", 0, false, cache.header.main);
-        // this.longButton = Get("bull", 0, false, cache.header.main);
-        // this.shortButton = Get("bear", 0, false, cache.header.main);
-        // this.longButton.addEventListener("click", this.clickHandle);
-        // this.shortButton.addEventListener("click", this.clickHandle);
-        /*
-        0: not enter
-        -1: short
-        1: long
-        */
+        this.button.addEventListener("click", this.clickHandle);
+        /*   0: not enter
+            -1: short
+            +1: long        */
         this.state = 0; 
     }
 
     react() {
-        if(cache.Position.state){
+        this.state = 0;
+        if(cache.Position.state)
             this.state = (cache.Position.direction == "Buy") ? 1: -1;
-        }else{
-            this.state = 0
-        }
+
         this.change();
     }
 
     change() {
-        for(let _class of ["but1", "but1_on", "but2_on"]){
-            try{
-                this.button.classList.remove(classList);
-            }catch(e){}
-        }
+        
+        this.button.classList.remove("but1", "but1_on", "but2_on");
+        this.button.innerText = cache.Position.price;
 
         switch (this.state){
             case 1:
                 this.button.classList.add("but1_on");
-                this.button.innerText = cache.Position.price;
                 break;
             case -1 :
-                
                 this.button.classList.add("but2_on");
-                this.button.innerText = cache.Position.price;
                 break;
             default:
                 this.button.classList.add("but1");
-                this.button.innerText = "";
-                break;
-                
+                break;          
         }
     }
 
-    _change() {
-        switch (this.state){
-            case 1:
-                this.shortButton.style.display = "none";
-                this.longButton.style.display = "block";
-                this.longButton.classList.remove("but1");
-                this.longButton.classList.add("but1_on");
-                this.longButton.innerText = cache.Position.price;
-                break;
-            case -1 :
-                this.longButton.style.display = "none";
-                this.shortButton.style.display = "block";
-                this.shortButton.classList.remove("but2");
-                this.shortButton.classList.add("but2_on");
-                this.shortButton.innerText = cache.Position.price;
-                break;
-            default:
-                this.longButton.style.display = "block";
-                this.shortButton.style.display = "block";
-                this.shortButton.classList.add("but2");
-                this.shortButton.classList.remove("but2_on");
-                this.longButton.classList.add("but1");
-                this.longButton.classList.remove("but1_on");
-                this.longButton.innerText = "Buy";
-                this.shortButton.innerText = "Sell";
-                break;
-                
-        }
-    }
+    clickHandle = () => (cache.Position.state)
+            ? this.ExistHandle()
+            : this.EntryHandle();
 
-    test() {
-        console.log(this.longButton);
-        console.log(this.shortButton);
-    }
-    clickHandle = () => {
-        if(cache.Position.state){
-            this.ExistHandle();
-        }else{
-            this.EntryHandle();
-        }
-    }
-    EntryHandle = () => {
+
+    EntryHandle = () => 
         IsInOpenPosition(
             ExtractImportancePositionDetail,
             () => {
                 alert("Button click:: Entry!! << No position found!");
-            }
-            
+            }    
         );
-    }
+    
+
     ExistHandle = () => {
         IsInOpenPosition(
             () => { alert("Button click:: Exit!! <<Still on an open position")},
@@ -153,7 +104,7 @@ class Button {
                             }
 
                             if(objectFound === false || objectFound === true){
-                                Alert("Trade not found")
+                                alert("Trade not found")
                             }else{
                                 cache.Position.reset();
                                 /**

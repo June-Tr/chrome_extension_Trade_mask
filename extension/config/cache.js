@@ -59,8 +59,8 @@ cache.Position.Change = async () => {
 }
 cache.Position.test = () => {
     cache.Position.state = true;
-    cache.Position.direction = "Sell";
-    cache.Position.price = 1.10315;
-    cache.Position.entry = "908030808";
+    cache.Position.direction = "Buy";
+    cache.Position.price = 1.10520;
+    cache.Position.entry = "908402786";
     cache.Position.Change();
 }
