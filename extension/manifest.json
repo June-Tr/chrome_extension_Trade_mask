@@ -26,7 +26,7 @@
         {
             "matches": ["https://trade.loginandtrade.com/webtrader/*"],
             "js": [
-                "Shortcut/Shortcut.js",
+                "Shortcut/Shortcut.js", "Shortcut/ShortcutMapping.js",
                 
                 "CONFIG/Account.js", "CONFIG/config.js",  "CONFIG/cache.js", "CONFIG/shortCutDictionary.js",
                 
