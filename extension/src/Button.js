@@ -1,9 +1,10 @@
 class Button {
     constructor() {
-        this.longButton = Get("bull", 0, false, cache.header.main);
-        this.shortButton = Get("bear", 0, false, cache.header.main);
-        this.longButton.addEventListener("click", this.clickHandle);
-        this.shortButton.addEventListener("click", this.clickHandle);
+        this.button = Get("_myButton", 0, false, cache.header.main);
+        // this.longButton = Get("bull", 0, false, cache.header.main);
+        // this.shortButton = Get("bear", 0, false, cache.header.main);
+        // this.longButton.addEventListener("click", this.clickHandle);
+        // this.shortButton.addEventListener("click", this.clickHandle);
         /*
         0: not enter
         -1: short
@@ -22,6 +23,31 @@ class Button {
     }
 
     change() {
+        for(let _class of ["but1", "but1_on", "but2_on"]){
+            try{
+                this.button.classList.remove(classList);
+            }catch(e){}
+        }
+
+        switch (this.state){
+            case 1:
+                this.button.classList.add("but1_on");
+                this.button.innerText = cache.Position.price;
+                break;
+            case -1 :
+                
+                this.button.classList.add("but2_on");
+                this.button.innerText = cache.Position.price;
+                break;
+            default:
+                this.button.classList.add("but1");
+                this.button.innerText = "";
+                break;
+                
+        }
+    }
+
+    _change() {
         switch (this.state){
             case 1:
                 this.shortButton.style.display = "none";

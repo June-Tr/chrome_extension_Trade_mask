@@ -80,8 +80,7 @@ let ModifyHeader = async() => {
       
             cache.header.main.innerHTML 
                 +=  CONFIG.Addition.Header.RiskFactor
-                    + CONFIG.Addition.Header.LongPosLog
-                    + CONFIG.Addition.Header.ShortPosLog;
+                    + CONFIG.Addition.Header.LongPosLog;
             
             PrepareCache();
         },{alertMessage:"ModifyHeader", tolerance: 200, killswitch: false}
@@ -95,7 +94,7 @@ let ModifyHeader = async() => {
 let PrepareCache = () =>{
 
     TimeOutWrapper(
-        () => {return !IsLoad("bull",0, false) || !IsLoad("bear",0, false)},
+        () => {return !IsLoad("_myButton",0, false)},
         () =>  cache.Load.PageLoad()
         ,{alertMessage:"PrepareCache", tolerance: 200, killswitch: false}
     )

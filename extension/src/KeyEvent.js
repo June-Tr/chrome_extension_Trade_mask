@@ -31,6 +31,9 @@ cache.Load._callbackOnPageLoad.push(
     }    
 )
 
+cache.Load._callbackOnPageLoad.push(
+    cache.Position.test
+)
 
 
 cache.Main._cbOnMainReload.push(

@@ -1,4 +1,5 @@
 let ACCOUNT = {
-    RiskFactor : 52,
-    minimumSL : 5
+    RiskFactor : 53.5,
+    minimumSL : 5,
+    RiskSize: 0.01
 }

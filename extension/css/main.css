@@ -29,13 +29,13 @@
 	text-decoration:none;
 	text-align: center;
 	width: 90px;
+	height: 28px;
 }
 .myButton:hover {
-	border-radius:6px;
-	border:0.4px solid  #dcdcdc;
-	font-size:16px;
-	font-weight:bold;
-	padding:10px 26px;
+	border:0.4px solid  #270f32;
+	background: #f6fff8;
+	color: #270f32;
+	background-color: #f0ffee!important;
 }
 .myButton:active {
 	position:relative;
@@ -55,29 +55,23 @@
 	background-color: #ABD0B3!important;
 	color:#202020;
 	font-family:Arial;
-	font-size:19.5px;
+	font-size:19px;
 	width:120%;
+	height: 34px;
 	text-shadow:0px 1px 0px #ffffff;
+	text-align: center;
 
 }
-.but2 {
-	box-shadow:inset 0px 1px 0px 0px #ffffff;
-	background:linear-gradient(to bottom, #ffffff 5%, #f6f6f6 100%);
-	background-color:#ffffff;
-	border-radius:6px;
-	border:0.4px solid #dcdcdc;
-	color:#666666;
-	text-shadow:0px 1px 0px #ffffff;	
-    margin-left: 20px;
-} 	
+
 .but2_on {
 	box-shadow:inset 0px 1px 0px 0px #ad1919;
-	background: #C92323;
-	background-color:#C92323;
-	border:0.6px solid #dcdcdc;
+	background: #C92323!important;
+	background-color:#C92323!important;
 	color:#ffd2d2;
-	font-size:20px;
+	font-family:Arial;
+	font-size:19px;
 	width: 120%;
+	height: 34px;
 	text-shadow:0px 1px 0px #C0C0C0;
-	margin-left: 70px;
+	text-align: center;
 }

@@ -43,9 +43,7 @@ const CONFIG =  {
         Header:{
             RiskFactorTitle: `<div  class="rf_title" ">Risk per trade: </div>`,
             RiskFactor: "",
-            LongPosLog:`<button id="bull" class="myButton but1"> Buy </button>`,
-            ShortPosLog:`<button id="bear" class="myButton but2"> Sell </button>`
-            
+            LongPosLog:`<button id="_myButton" class="myButton but1">  </button>`
         }
     }
 }

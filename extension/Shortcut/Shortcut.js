@@ -97,8 +97,9 @@ let canvasListener = async () => {
                                     );
                                         break;
                                 case SHORTCUT.OPEN_ALERT_MENU:
-                                    doc.querySelector("div[class='button-dealticket__label']").click();
-                                    OpenAlertMenu();
+                                    //doc.querySelector("div[class='button-dealticket__label']").click();
+                                    //OpenAlertMenu();
+                                    getCurrentPointerPrice(event);
                                     break;
 
                                 case SHORTCUT.ADD_TEXT:
@@ -294,36 +295,43 @@ let ToggleCloseAdjust = async () => {
         ,{alertMessage:"ToggleCloseAdjust", tolerance: 200, killswitch: true})
 }
 
-let getCurrentPointerPrice = async () => {
-    return;
-    // secondaryDocument.dispatchEvent(
-    //     new MouseEvent('contextmenu',{bubbles:true})
-    // );
-    //     TimeOutWrapper(
-    //         () => {
-    //             return secondaryDocument.querySelector("span[class='context-menu-wrapper']") == null},
-    //         () => {
-    //             let menu = secondaryDocument.querySelector("span[class='context-menu-wrapper']")
-    //             if(menu.querySelectorAll("span").length == 0) SleepAndRerun(rightClickHandler, 300);
+let getCurrentPointerPrice = async (e) => {
+    console.log(secondaryDocument.querySelector("canvas"))
+    secondaryDocument.querySelector("canvas").dispatchEvent(
+        new MouseEvent('contextmenu',{
+            bubbles:true,
+            button: 2,
+            buttons: 2,
+            clientX: e.clientX,
+            clientY: e.clientY
+        })
+    );
+    return
+        TimeOutWrapper(
+            () => {
+                return secondaryDocument.querySelector("span[class='context-menu-wrapper']") == null},
+            () => {
+                let menu = secondaryDocument.querySelector("span[class='context-menu-wrapper']")
+                if(menu.querySelectorAll("span").length == 0) SleepAndRerun(rightClickHandler, 300);
     
-    //             let tradeButton = (secondaryDocument.querySelectorAll("span[class='label-1If3beUH']")[2])
+                let tradeButton = (secondaryDocument.querySelectorAll("span[class='label-1If3beUH']")[2])
     
-    //             if("Create Limit Order..." == (tradeButton.innerText)){
-    //                 console.log("place order")
-    //             }else{
-    //                 console.log("trade")
-    //                 tradeButton.focus();
-    //                 TimeOutWrapper(
-    //                     () => {return menu.querySelector("tr[data-action-name='trade-sell-limit']") != null},
-    //                     () => {
-    //                         console.log(menu.querySelector("tr[data-action-name='trade-sell-limit']"))
-    //                     }
-    //                 )
-    //             }
-    //         }
-    //         , {alertMessage: false, tolerance: 30, killswitch: true}, 10
-    //     )
-    // ;
+                if("Create Limit Order..." == (tradeButton.innerText)){
+                    console.log("place order")
+                }else{
+                    console.log("trade")
+                    tradeButton.focus();
+                    TimeOutWrapper(
+                        () => {return menu.querySelector("tr[data-action-name='trade-sell-limit']") != null},
+                        () => {
+                            console.log(menu.querySelector("tr[data-action-name='trade-sell-limit']"))
+                        }
+                    )
+                }
+            }
+            , {alertMessage: false, tolerance: 30, killswitch: true}, 10
+        )
+    ;
     
 }
 /**
