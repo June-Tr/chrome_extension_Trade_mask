@@ -2,6 +2,10 @@ class Button {
     constructor() {
         this.button = Get("_myButton", 0, false, cache.header.main);
         this.button.addEventListener("click", this.clickHandle);
+        this.button.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+            navigator.clipboard.writeText(this.button.innerText);
+        })
         /*   0: not enter
             -1: short
             +1: long        */
@@ -20,7 +24,7 @@ class Button {
         
         this.button.classList.remove("but1", "but1_on", "but2_on");
         this.button.innerText = cache.Position.price;
-
+        navigator.clipboard.writeText(cache.Position.price);
         switch (this.state){
             case 1:
                 this.button.classList.add("but1_on");

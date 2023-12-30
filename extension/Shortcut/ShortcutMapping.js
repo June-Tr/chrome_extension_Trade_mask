@@ -71,12 +71,10 @@ let canvasListener = async () => {
                             SleepAndRerun(() => {stopper = false;});
                         }
                         if(lockTogglerEnable && SHORTCUT.LOCK_TARGET(event)){
-                            
-                            //openFromTargetMenu("lock")
+                            openFromTargetMenu("lock")
                         }
                         if(event.altKey){
                             if(showGuide){
-                                console.log("show")
                                 Get("shortcut",0, false, doc).style.display = "flex";
                             }
                             switch(event.key){
@@ -89,12 +87,12 @@ let canvasListener = async () => {
                                     );
                                         break;
                                 case SHORTCUT.OPEN_ALERT_MENU:
-                                    //doc.querySelector("div[class='button-dealticket__label']").click();
-                                    //OpenAlertMenu();
-                                    getCurrentPointerPrice(event);
+                                    getPrice();
                                     break;
 
                                 case SHORTCUT.ADD_TEXT:
+                                    spaceBarToggle = false;
+                                    isText = true;
                                     OpenDrawingToolMenu(CONFIG.MENU_INDEX.TEXT, CONFIG.FEATURE.INSERT_TXT);
                                     break;
 
@@ -151,6 +149,7 @@ let canvasListener = async () => {
                         if(showGuide && event.keyCode == 18){   
                             event.preventDefault();
                             Get("shortcut",0, false, doc).style.display = "none";
+                            
                        }
                     },
                     true

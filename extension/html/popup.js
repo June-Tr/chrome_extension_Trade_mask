@@ -18,10 +18,11 @@ let popupStatic = true;
 let showShortCut = (e) => {
     let handler = Get("shortcut",0, false, secondaryDocument);
 
-    if(popupStatic) return;
+    if(!popupStatic){
 
-    handler.style.top = e.clientY + "px";
-    handler.style.left = (e.clientX + 25) + "px";
+        handler.style.top = e.clientY + "px";
+        handler.style.left = (e.clientX + 25) + "px";
+    }
 }
 
 let createPopup = (doc) => {

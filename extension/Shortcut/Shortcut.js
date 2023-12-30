@@ -7,6 +7,48 @@ let spaceBarToggle = true;
 let stopper = false;
 let lockTogglerEnable = true;
 
+let first = true;
+let price = 0;
+let getPrice = async () => {
+    OpenDrawingToolMenu(5,15);
+    let findPrice = async () => {
+        TimeOutWrapper(
+            () => {return secondaryDocument.querySelector(".tv-floating-toolbar__widget-wrapper") == null},
+            () => {
+
+                secondaryDocument.removeEventListener("click", findPrice, true);
+                openFromTargetMenu("settings");
+
+                TimeOutWrapper(
+                    () => {return !IsLoad("dialog-34XTwGTT", 0, true, secondaryDocument)},
+                    () => {
+                        let menu = Get("dialog-34XTwGTT", 0, true, secondaryDocument)
+                        menu.querySelectorAll(".tab-1l4dFt6c")[2].click();
+                        TimeOutWrapper(
+                            () => {return menu.querySelector("input") == null},
+                            () => {
+                                price = menu.querySelector("input").getAttribute("value");
+                                secondaryDocument.dispatchEvent(
+                                    new KeyboardEvent("keydown", {keyCode:SHORTCUT.CLOSE_FORM})
+                                )
+                                secondaryDocument.dispatchEvent(
+                                    new KeyboardEvent("keydown", {keyCode:SHORTCUT.CLOSE_FORM})
+                                )
+                                openFromTargetMenu("remove");
+                                secondaryDocument.querySelector("div[class='button-dealticket__label']").click();
+                                OpenAlertMenu();
+                            }
+                        )
+                    },{alertMessage:"getPrice(1)", tolerance: 50, killswitch: true},
+                    10)
+            },{alertMessage:"getPrice(2)", tolerance: 50, killswitch: true},
+            10
+        )
+    }
+    secondaryDocument.addEventListener("click", findPrice, true);
+}
+
+
 /**
  * This deal with rightclick to place an entry order
  */
@@ -132,53 +174,14 @@ let ToggleCloseAdjust = async () => {
         }
         ,{alertMessage:"ToggleCloseAdjust", tolerance: 200, killswitch: true})
 }
-
-let getCurrentPointerPrice = async (e) => {
-    console.log(secondaryDocument.querySelector("canvas"))
-    secondaryDocument.querySelector("canvas").dispatchEvent(
-        new MouseEvent('contextmenu',{
-            bubbles:true,
-            button: 2,
-            buttons: 2,
-            clientX: e.clientX,
-            clientY: e.clientY
-        })
-    );
-    return
-        TimeOutWrapper(
-            () => {
-                return secondaryDocument.querySelector("span[class='context-menu-wrapper']") == null},
-            () => {
-                let menu = secondaryDocument.querySelector("span[class='context-menu-wrapper']")
-                if(menu.querySelectorAll("span").length == 0) SleepAndRerun(rightClickHandler, 300);
-    
-                let tradeButton = (secondaryDocument.querySelectorAll("span[class='label-1If3beUH']")[2])
-    
-                if("Create Limit Order..." == (tradeButton.innerText)){
-                    console.log("place order")
-                }else{
-                    console.log("trade")
-                    tradeButton.focus();
-                    TimeOutWrapper(
-                        () => {return menu.querySelector("tr[data-action-name='trade-sell-limit']") != null},
-                        () => {
-                            console.log(menu.querySelector("tr[data-action-name='trade-sell-limit']"))
-                        }
-                    )
-                }
-            }
-            , {alertMessage: false, tolerance: 30, killswitch: true}, 10
-        )
-    ;
-    
-}
+//ticket-form ng-untouched ng-pristine ng-invalid ng-star-inserted
+//ticket-form ng-star-inserted ng-touched ng-dirty ng-valid
 /**
  * (1) Navigate to the alert menu.
  * (2) Focus the window
  * (3) Add Submittion on Enter, Close on ESC button press
  */
 let OpenAlertMenu = () => {
-    //getCurrentPointerPrice();
     TimeOutWrapper(
         () => {return document.getElementsByTagName("app-deal-ticket").length < 1 }, 
         () => {
@@ -191,7 +194,12 @@ let OpenAlertMenu = () => {
                     // focus after the tab switch
                     TimeOutWrapper(
                         () => { return !form.querySelector("span")?.children[2].classList.contains("selected")},
-                        () => {form.getElementsByTagName("input")[3].focus()}
+                        () => {
+                            form.getElementsByTagName("input")[3].click()
+                            navigator.clipboard.writeText(price);
+                            price = 0;
+
+                        }
                     )
                 },{alertMessage:"OpenAlertMenu: Focus", tolerance: 50, killswitch: true},
                 30
@@ -285,6 +293,7 @@ let SubmitViaEnter_Exit = async (entryInputIndex = 6) => {
         ,{alertMessage:"SubmitViaEnter_Exit", tolerance: 200, killswitch: false})
 }
 
+let isText = false;
 /**
  * Target menu are from the drawing object in the canvas, by click it we will see a menu pop up
  * @param {String: use devTool from platform to see tha viable name} name 
@@ -294,6 +303,9 @@ let openFromTargetMenu = async (name) =>{
     if(menu.length > 0){
         for(let i = 0; i < menu.length; i++){
             let button = menu[i].getElementsByTagName("div")[0]
+            if(button.querySelector(".tv-linetool-properties-toolbar__text") != null){
+                isText = true;
+            }
             if(button.getAttribute('data-name') == name){
                 if(name == "settings"){
                     SettingMenuHandler();
@@ -302,6 +314,9 @@ let openFromTargetMenu = async (name) =>{
                 // make sure no Propagation else lead to double click (left same state)
                 button.addEventListener("click", (event) => {  event.preventDefault() }, true)
                 button.click();
+                if(isText){
+                    spaceBarToggle = false;
+                }
                 break;
             }
         }
@@ -320,6 +335,10 @@ let SettingMenuHandler = async () => {
                     "click",
                     () => {
                         lockTogglerEnable = true;
+                        if(isText){
+                            spaceBarToggle = true;
+                            isText = false;
+                        }
                     }
                     ,true)
             });
@@ -345,15 +364,15 @@ let SettingMenuHandler = async () => {
                             return;
                         }
                     }
-                    console.log(headerList)
                 }
-                if(event.keyCode == SHORTCUT.SUBMIT_FORM)
+                if(event.keyCode == SHORTCUT.SUBMIT_FORM){
                     clickable[1].click();
-                if(event.keyCode == SHORTCUT.CLOSE_FORM)
-                    clickable[0].click();
+                }if(event.keyCode == SHORTCUT.CLOSE_FORM){
+                    clickable[0].click(); 
+                }
             }, true);
         },
-        {alertMessage: "SettingMenuHandler", tolerance: 20, killswitch: true}
+        {alertMessage: false, tolerance: 50, killswitch: true}
     )
 }
 /**
@@ -386,6 +405,38 @@ let OpenDrawingTool = async (toolName) => {
                 }
                 menuObject.getElementsByTagName("div")[toolName].click();
                 clickCount = 0;
+
+                if(isText){
+                    TimeOutWrapper(
+                        () => {return !IsLoad("dialog-34XTwGTT", 0, true, secondaryDocument)},
+                        () => {
+                            let menu = Get("dialog-34XTwGTT", 0, true, secondaryDocument);
+                            let clickable = [...menu.querySelectorAll("button")]
+                            clickable.push(menu.querySelector("span[data-name='close']"));
+                
+                            clickable.forEach(button => {
+                                button.addEventListener(
+                                    "click",
+                                    () => {
+                                        lockTogglerEnable = true;
+                                        if(isText){
+                                            spaceBarToggle = true;
+                                            isText = false;
+                                        }
+                                    }
+                                    ,true)
+                            });
+                            menu.addEventListener("keydown", (event) => {
+                                if(event.keyCode == SHORTCUT.SUBMIT_FORM){
+                                    clickable[1].click();
+                                }if(event.keyCode == SHORTCUT.CLOSE_FORM){
+                                    clickable[0].click(); 
+                                }
+                            }, true);
+                        }
+                    )
+                }
+                
             }
         },{alertMessage:"OpenDrawingTool", tolerance: 200, killswitch: false}
     )
