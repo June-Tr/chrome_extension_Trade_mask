@@ -29,21 +29,21 @@ app.post('/Order', (req, res) => {
     SendOrderWrapper(order);
 })
 
-app.post('/Trade', (req, res) => {
+app.post('/Trade', async (req, res) => {
     console.log("Trade")
     const trade = req.body;
-    res.body = JSON.stringify({value: "return message"})
     
     //console.log(trade)
-    
-    SendTrade(trade);
+
+    await SendTrade(trade, res, true);
+    console.log("Complete work flow----------------")
 })
 
 
-app.post("/Many/Intraday/_Order", (req, res) => {
+app.post("/Many/Intraday/_Order", async (req, res) => {
     console.log("Update Intraday Order");
     console.log(req.body);
-    updateIntraDayOrder(
+     await updateIntraDayOrder(
         req.body.date,
         req.body.orders
     )

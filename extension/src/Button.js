@@ -52,13 +52,13 @@ class Button {
         );
     
 
-    ExistHandle = () => {
+    ExistHandle = async () => {
         IsInOpenPosition(
             () => { alert("Button click:: Exit!! <<Still on an open position")},
             () => // only try attempt finding the end of position if not on any position
                 NavTo( "History",
-                    () => ExtractPrice(
-                        (found, _) => {
+                    async () => ExtractPrice(
+                        async (found, _) => {
                             // find the index of the current entry
                             let i =0;
 
@@ -118,14 +118,16 @@ class Button {
                                     entry: entry.id,
                                     exit: objectFound.id
                                 }
+                                
                                 SendOrder(entry); 
                                 SendOrder(objectFound);
                                 SendTrade({
                                     entry: cache.Position.mostRecent.entry,
                                     exit: cache.Position.mostRecent.exit,
-                                    pattern: "Long",
-                                    description: "_____Require filling in"
+                                    pattern: "--------------------------------------------",
+                                    description: "Paste: Img here"
                                 })
+                                console.log("+++")
                             }
                             NavTo(CONFIG.MainWS);
                         },
@@ -137,3 +139,17 @@ class Button {
     }
 }
 
+async function getClipboardContents() {
+    try {
+      const clipboardItems = await navigator.clipboard.read();
+  
+      for (const clipboardItem of clipboardItems) {
+        for (const type of clipboardItem.types) {
+          const blob = await clipboardItem.getType(type);
+          // we can now use blob here
+        }
+      }
+    } catch (err) {
+      console.error(err.name, err.message);
+    }
+  }

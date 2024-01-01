@@ -5,10 +5,8 @@ let page = null;
 let visualiserUpdate = (event) => {
     
     //console.log(event.clientX < firstCoordinate.x)
-    handle.style.top =( (event.clientY < firstCoordinate.y) 
-        ? event.clientY : firstCoordinate.y) + "px";
-    handle.style.left = ((event.clientX < firstCoordinate.x) 
-    ? event.clientX : firstCoordinate.x ) + "px";
+    handle.style.top =( Math.min(firstCoordinate.y, event.clientY )) + "px";
+    handle.style.left = (Math.min(firstCoordinate.x, event.clientX )) + "px";
     handle.style.width = Math.abs(event.clientX - firstCoordinate.x) + "px";
     handle.style.height = Math.abs(event.clientY - firstCoordinate.y) + "px";
 }
@@ -26,6 +24,8 @@ let createVisualiser = (docu, coord) => {
         doc = docu;
         page = Get("chart-page", 0 , true, doc);
         firstCoordinate = coord; 
+        firstCoordinate.x += toolBarWidth;
+        firstCoordinate.y += basebarHeight;
         handle = doc.createElement("div");
         handle.setAttribute("id", "visualiser");
         handle.setAttribute("class", "tv-floating-toolbar");

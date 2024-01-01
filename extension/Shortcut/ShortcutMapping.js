@@ -39,6 +39,7 @@ let canvasListener = async () => {
                 SleepAndRerun(canvasListener, 500);
             }else {
                 createPopup(doc)
+                console.log( doc.querySelector("canvas"))
                 doc.addEventListener("keydown", 
                     (event) => {
                         
@@ -154,8 +155,7 @@ let canvasListener = async () => {
                     },
                     true
                 )
-                doc.addEventListener("contextmenu", rightClickHandler, true)
-
+                doc.addEventListener("contextmenu", rightClickHandler, true);
             },{alertMessage:"canvasListener", tolerance: 200, killswitch: false}
     )
 }

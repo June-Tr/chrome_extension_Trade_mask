@@ -4,6 +4,10 @@ let NotionKey = process.env.NOTION_API_KEY;
 let OrderDB =process.env.NOTION_ORDER_ID;
 let TradeDB =process.env.NOTION_TRADE_ID;
 const notion = new Client({ auth: NotionKey});
+
+let cache= {
+    order : new Map()
+}
 let searchWTitle = async (db, title) => {
     let titleBuffer = []
     title.forEach((t) => {
@@ -53,7 +57,7 @@ let SendOrder = async (order) => {
     console.log(order)
     const {id, label, market, date, price, size, curency, type} = order;
     console.log(`${id}, ${label}, ${market}, ${date}, ${price}, ${size}, ${curency}, ${type}`)
-    await notion.pages.create(
+    let res = await notion.pages.create(
         {
             parent:{ database_id: OrderDB},
             properties: {
@@ -97,67 +101,94 @@ let SendOrder = async (order) => {
             },
         }
     )
+
+    cache.order.set(id, res.id);
+}
+/**
+ * Like the Time out but this case, sleep once
+ * @param {*} cb 
+ * @param {*} time 
+ */
+let SleepAndRerun = async (cb, time = 100) => {
+    let id = setTimeout(() => { 
+        clearTimeout(id);
+        cb();
+    }, time);
 }
 
-let SendTrade = async (trade) => {
+
+let SendTrade = async (trade,res, initFlag=true) => {
     const {entry, exit, pattern ,description, link} = trade;
-    console.log([entry, exit])
-    let buffer = await searchWTitle(OrderDB, [entry, exit]);
+
+    // let buffer = await searchWTitle(OrderDB, [entry, exit]);
     let entryId = null;
     let exitId = null;
-
-    /**
-     * @todo: issue that if trade is place along with order, order is not exist in the db therefore cnat make a queyr to find its reference
-     */
-    for(let i =0; i < 2; i++){
-        if(buffer.length < 2){
-            break;
+    if(cache.order.get(entry) == undefined ||
+        cache.order.get(exit) == undefined){
+        // the order might exist in the database
+        if(initFlag){
+            initFlag = !initFlag;
+            let buffer = await searchWTitle(OrderDB, [entry, exit]);
+            if(buffer.length != 0){
+                //we found some information
+                for(let i =0; i < buffer.length; i++){
+                        if(buffer[i].properties["Position id"].title[0].text.content == entry){
+                            cache.order.set(entry, buffer[i].id)
+                        }else{
+                            cache.order.set(exit, buffer[i].id)
+                        }
+                    }
+            }
         }
-        if(buffer[i].properties["Position id"].title[0].text.content == entry){
-            entryId = buffer[i].id
-        }else{
-            exitId = buffer[i].id
-        }
+        return SleepAndRerun(() => SendTrade(trade, res, false), 500);
     }
 
-    await notion.pages.create(
-        {
-            parent:{ database_id: TradeDB},
-            properties: {
-                "EntryOrder":{
-                    type: "title",
-                    title: [{ type: "text", text: {content: entry}}]
-                },
-                "Entry":{
-                    "relation": [{"id":entryId}]
-                },
-                "Exit":{
-                    "relation": [{"id":exitId}]
-                },
-                "Candlestick Pattern":{
-                    "multi_select" :  [{"name": pattern}]
-                 }
+    entryId = cache.order.get(entry) 
+    exitId = cache.order.get(exit) 
+
+
+    let data = {
+        parent:{ database_id: TradeDB},
+        properties: {
+            "EntryOrder":{
+                type: "title",
+                title: [{ type: "text", text: {content: entry}}]
             },
-            "children": [
-                {
-                    "object": "block",
-                    "paragraph": {
-                        "rich_text": [
-                            {
-                                "text": {
-                                    "content": description,
-                                    "link": {
-                                        "url": link
-                                    }
-                                },
-                                "href": link
+            "Entry":{
+                "relation": [{"id":entryId}]
+            },
+            "Exit":{
+                "relation": [{"id":exitId}]
+            },
+            "Candlestick Pattern":{
+                "multi_select" :  [{"name": pattern}]
+             }
+        },
+        "children": [
+            {
+                "object": "block",
+                "paragraph": {
+                    "rich_text": [
+                        {
+                            "text": {
+                                "content": description
                             }
-                        ]
-                    }
+                        }
+                    ]
                 }
-            ] 
-        }
-    )
+            }
+        ] 
+    }
+    if(link != undefined){
+        data["children"][0].paragraph.rich_text[0].text.link = { url : link};
+        data["children"][0].paragraph.rich_text[0].href = link;
+    }
+    
+    let val = JSON.stringify({url:(await notion.pages.create(
+        data
+    ))});
+    console.log(`response: ${res.body}`)
+    res.send(val);
 }
 
 let SendOrderWrapper = async (order) => {

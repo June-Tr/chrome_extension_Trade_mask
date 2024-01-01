@@ -6,9 +6,14 @@ let onPosition = false;
 let spaceBarToggle = true;
 let stopper = false;
 let lockTogglerEnable = true;
-
 let first = true;
+
+
+
 let price = 0;
+/**
+ * Attempt to extract price at pointer level and copy to clipboard
+ */
 let getPrice = async () => {
     OpenDrawingToolMenu(5,15);
     let findPrice = async () => {
@@ -114,8 +119,8 @@ let adjustSize = async () => {
                 },
                 true
             )
-            form.querySelector(".button--submit").addEventListener("click", () => {adjustFlag=false, console.log("click")});
-            form.querySelector("div[class='deal-ticket-header__destroy']").addEventListener("click", () => {adjustFlag=false, console.log("click")});
+            form.querySelector(".button--submit").addEventListener("click", () => {adjustFlag=false});
+            form.querySelector("div[class='deal-ticket-header__destroy']").addEventListener("click", () => {adjustFlag=false});
         }
         ,{alertMessage:"adjustSize", tolerance: 200, killswitch: false}),
         50
@@ -446,21 +451,29 @@ let remain = 0
 let coors = [];
 let img = null;
 let blockBySnipper = false;
-let toolBarWidth = 0;                         
+let toolBarWidth = 0;     
+let basebarHeight = 0;                    
 let find_coor = (event) => {    
         
         if(event.target.tagName == "CANVAS" ){
-            
             let mainCanvasWidth = secondaryDocument.querySelector("canvas").offsetWidth
             let mainCanvasHeight = secondaryDocument.querySelector("canvas").offsetHeight
             toolBarWidth = secondaryDocument.querySelector(".inner-1xuW-gY4").offsetWidth;
+            basebarHeight = secondaryDocument.querySelector(".wrap-3tiHesTk").offsetHeight;
             let tempWidth = mainCanvasWidth + toolBarWidth
+            let tempHeight = mainCanvasHeight + basebarHeight  
+            
             coors.push({
-                x: (event.clientX < tempWidth)
-                    ? (event.clientX > toolBarWidth) ? event.clientX - toolBarWidth : 0
-                    : mainCanvasWidth,
-                y:(event.clientY < mainCanvasHeight) ? event.clientY : mainCanvasHeight
+                x: (event.clientX > tempWidth)
+                    ? mainCanvasWidth
+                    :(event.clientX < toolBarWidth) ? 0 : event.clientX - toolBarWidth ,
+                y: (event.clientY > tempHeight)
+                    ? mainCanvasHeight
+                    :(event.clientY < basebarHeight) ? 0:  event.clientY - basebarHeight
+                     
             })
+            console.log(coors);
+            console.log(`(${event.clientX}, ${event.clientY})`);
             remain--;
             if(remain == 0 || coors.length == 2){
                 //destroyVisualiser(secondaryDocument);
@@ -540,7 +553,9 @@ let SaveImage = (coors, maxHeight) => {
     document.querySelector("app-workspace-panel").prepend(img);
     document.addEventListener("keydown", NewScreenshotHandler, true)
 }
-
+/**
+ * Starting point to the snipper handler
+ */
 let SnipCanvas = () => {
     remain = 2;
     blockBySnipper = true;

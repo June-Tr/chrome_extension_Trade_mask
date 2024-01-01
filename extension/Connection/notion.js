@@ -37,15 +37,42 @@ let formFetchConfig = (data) => {
     }
 } 
 let SendOrder = async (data) => {
-    console.log(await fetch(Order_URL,formFetchConfig(data))
-    );
+    try{
+        await fetch(Order_URL,formFetchConfig(data)) 
+    }catch(e){
+        alert("SendOrder: Server might not operate")
+    }
         
 }
 let SendTrade = async (data) => {
-    console.log("trad++++++++++++++++++++++++++++++++")
-    console.log(await fetch(Trade_URL,formFetchConfig(data)));       
+    try {
+        console.log("trad++++++++++++++++++++++++++++++++")
+        await fetch(Trade_URL,formFetchConfig(data))
+            .then((response) => { 
+                if (!response.ok) { 
+                    console.log("Not Ok")
+                    throw new Error("Network response was not ok"); 
+                }
+                else{
+                    console.log("OK")
+                    return response.json(); 
+                } 
+            }) 
+            .then((data) => { 
+                // open the notion page in new window so we can log the picture 
+                window.open(data.url.url); }) 
+                .catch((error) => { console.error("There was a problem with the fetch operation:", error); });
+
+    }catch(e){
+        console.log(e);
+        alert("SendTrade: Server might not operate")
+    }     
 }
 
 let SendManyOrder = async(data) => {
-    console.log(await fetch(Orders_day_RUL,formFetchConfig(data)));
+    try{
+        (await fetch(Orders_day_RUL,formFetchConfig(data)));
+    }catch(e){
+        alert("SendManyOrder: Server might not operate")
+    }
 }

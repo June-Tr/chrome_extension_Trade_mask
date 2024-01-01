@@ -83,7 +83,7 @@ let ModifyHeader = async() => {
                     + CONFIG.Addition.Header.LongPosLog;
             
             PrepareCache();
-        },{alertMessage:"ModifyHeader", tolerance: 200, killswitch: false}
+        },{alertMessage:"ModifyHeader", tolerance: 2500, killswitch: false}
         , 20
     )
 }
